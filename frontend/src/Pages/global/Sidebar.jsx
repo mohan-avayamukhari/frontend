@@ -7,16 +7,12 @@ import { tokens } from "../../../Themes/themes.js";
 import {
   HomeOutlined,
   MenuOutlined,
-  PeopleOutlined,
-  ReceiptOutlined,
-  PersonOutlined,
+  TravelExploreOutlined,
+  ReportGmailerrorredOutlined,
+  PersonAddOutlined,
   HelpOutlineOutlined,
-  PieChartOutlineOutlined,
-  TimelineOutlined,
-  MapOutlined,
-  ContactsOutlined,
-  CalendarTodayOutlined,
-  BarChartOutlined
+  ListAltOutlined,
+  GroupOutlined,
 } from "@mui/icons-material";
 
 const Item = ({ title, to, icon, selected, setSelected }) => {
@@ -56,10 +52,10 @@ const Sidebar = () => {
           padding: "5px 35px 5px 20px !important",
         },
         "& .pro-inner-item:hover": {
-          color: "#868dfb !important",
+          color: `${colors.greenAccent[500]} !important`,
         },
         "& .pro-menu-item.active": {
-          color: "#6870fa !important",
+          color: `${colors.greenAccent[500]} !important`,
         },
       }}
     >
@@ -81,9 +77,6 @@ const Sidebar = () => {
                 alignItems="center"
                 ml="15px"
               >
-                <Typography variant="h3" color={colors.grey[100]}>
-                  PlaceHolder
-                </Typography>
                 <IconButton onClick={() => setIsCollapsed(!isCollapsed)}>
                   <MenuOutlined />
                 </IconButton>
@@ -98,7 +91,7 @@ const Sidebar = () => {
                   alt="profile-user"
                   width="100px"
                   height="100px"
-                  //src={`../../assets/user.png`}
+                  src="../../images/admin.png "
                   style={{ cursor: "pointer", borderRadius: "50%" }}
                 />
               </Box>
@@ -124,53 +117,59 @@ const Sidebar = () => {
               setSelected={setSelected}
             />
 
-            <Typography
-              variant="h6"
-              color={colors.grey[300]}
-              sx={{ m: "15px 0 5px 20px" }}
-            >
-              Data
-            </Typography>
-            <Item
-              title="Manage Team"
-              to="/team"
-              icon={<PeopleOutlined />}
-              selected={selected}
-              setSelected={setSelected}
-            />
-            <Item
-              title="Contacts Information"
-              to="/contacts"
-              icon={<ContactsOutlined />}
-              selected={selected}
-              setSelected={setSelected}
-            />
-            <Item
-              title="Invoices Balances"
-              to="/invoices"
-              icon={<ReceiptOutlined />}
-              selected={selected}
-              setSelected={setSelected}
-            />
+            {!isCollapsed && (
+              <Typography
+                variant="h6"
+                color={colors.grey[300]}
+                sx={{ m: "15px 0 5px 20px" }}
+              >
+                Cluster Management
+              </Typography>
+            )}
 
-            <Typography
-              variant="h6"
-              color={colors.grey[300]}
-              sx={{ m: "15px 0 5px 20px" }}
-            >
-              Pages
-            </Typography>
             <Item
-              title="Profile Form"
-              to="/form"
-              icon={<PersonOutlined />}
+              title="Discovery"
+              to="/discovery"
+              icon={<TravelExploreOutlined />}
               selected={selected}
               setSelected={setSelected}
             />
             <Item
-              title="Calendar"
-              to="/calendar"
-              icon={<CalendarTodayOutlined />}
+              title="DR Policy"
+              to="/dr-policy"
+              icon={<ListAltOutlined />}
+              selected={selected}
+              setSelected={setSelected}
+            />
+            <Item
+              title="Reports"
+              to="/reports"
+              icon={<ReportGmailerrorredOutlined />}
+              selected={selected}
+              setSelected={setSelected}
+            />
+            
+            {!isCollapsed && (
+              <Typography
+                variant="h6"
+                color={colors.grey[300]}
+                sx={{ m: "15px 0 5px 20px" }}
+              >
+                Admin Tools
+              </Typography>
+            )}
+
+            <Item
+              title="Create New User"
+              to="/create-user"
+              icon={<PersonAddOutlined />}
+              selected={selected}
+              setSelected={setSelected}
+            />
+            <Item
+              title="All Users"
+              to="/all-users"
+              icon={<GroupOutlined />}
               selected={selected}
               setSelected={setSelected}
             />
@@ -178,42 +177,6 @@ const Sidebar = () => {
               title="FAQ Page"
               to="/faq"
               icon={<HelpOutlineOutlined />}
-              selected={selected}
-              setSelected={setSelected}
-            />
-
-            <Typography
-              variant="h6"
-              color={colors.grey[300]}
-              sx={{ m: "15px 0 5px 20px" }}
-            >
-              Management
-            </Typography>
-            <Item
-              title="Cr"
-              to="/bar"
-              icon={<BarChartOutlined />}
-              selected={selected}
-              setSelected={setSelected}
-            />
-            <Item
-              title="Pie Chart"
-              to="/pie"
-              icon={<PieChartOutlineOutlined />}
-              selected={selected}
-              setSelected={setSelected}
-            />
-            <Item
-              title="Line Chart"
-              to="/line"
-              icon={<TimelineOutlined />}
-              selected={selected}
-              setSelected={setSelected}
-            />
-            <Item
-              title="Geography Chart"
-              to="/geography"
-              icon={<MapOutlined />}
               selected={selected}
               setSelected={setSelected}
             />

@@ -6,7 +6,7 @@ import Dashboard from "./Pages/Dashboard.jsx";
 import PrivateRouter from "./components/PrivateRouter.jsx";
 import Sidebar from "./Pages/global/sidebar.jsx";
 import Topbar from "./Pages/global/topbar.jsx";
-
+import Discovery from "./Pages/Discovery.jsx"
 function App() {
   const [theme, colorMode] = useMode();
   const location = useLocation();
@@ -24,6 +24,7 @@ function App() {
             <Routes>
               <Route path="/login" element={<SignIn />} />
               <Route path="/dashboard" element={<PrivateRouter><Dashboard /></PrivateRouter>}/>
+              <Route path="/discovery" element={<PrivateRouter><Discovery/></PrivateRouter>}/>
               <Route path="*" element={<Navigate to="/dashboard" />} />
             </Routes>
           </main>
