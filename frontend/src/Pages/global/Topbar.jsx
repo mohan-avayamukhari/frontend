@@ -1,5 +1,6 @@
 import { Box, IconButton, useTheme } from "@mui/material";
-import { useContext } from "react";
+import { useMediaQuery } from "@mui/material";
+import { useContext, useEffect } from "react";
 import { ColorModeContext, tokens } from "../../../Themes/themes.js";
 import InputBase from "@mui/material/InputBase";
 import LightModeOutlinedIcon from "@mui/icons-material/LightModeOutlined";
@@ -13,6 +14,13 @@ const Topbar = () => {
   const theme = useTheme();
   const colors = tokens(theme.palette.mode);
   const colorMode = useContext(ColorModeContext);
+
+  const preferredMode = useMediaQuery('(prefers-color-scheme: dark)');
+
+  useEffect(() => {
+    // Update theme based on preferred mode when it changes
+    colorMode.toggleColorMode(preferredMode ? 'dark' : 'light');
+  }, [preferredMode, colorMode]);
 
   return (
     <Box position="relative">

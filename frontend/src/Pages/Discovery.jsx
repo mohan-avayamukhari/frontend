@@ -1,9 +1,6 @@
-import { Box, Button, InputLabel, TextField } from "@mui/material";
+import { Box, Button, InputLabel, TextField , Typography} from "@mui/material";
 import useMediaQuery from "@mui/material/useMediaQuery";
-import Header from "../components/Header";
 import {useState, useEffect, useMemo} from "react";
-import { useTheme } from "@emotion/react";
-import {tokens} from "../../Themes/themes.js"
 
 
 const Form = () => {
@@ -47,7 +44,9 @@ useEffect(() => {
 
   return (
     <Box m="20px" p="0 38%">
-      <Header title="Add Cluster" />
+      <Typography color= "secondary" padding="1.2rem" component="h1" variant="h5" fontSize="2rem" textAlign="center">
+        Add cluster
+        </Typography>
           <form onSubmit={handleFormSubmit}>
             <Box
               display="flex"
