@@ -1,7 +1,6 @@
-import { Box, Button, InputLabel, TextField , Typography} from "@mui/material";
+import { Box, InputLabel, Button, Dialog, DialogContent, DialogTitle, TextField, Typography } from "@mui/material";
 import useMediaQuery from "@mui/material/useMediaQuery";
-import {useState, useEffect, useMemo} from "react";
-
+import { useState, useEffect, useMemo } from "react";
 
 const Form = () => {
 
@@ -12,6 +11,7 @@ const Form = () => {
   const [port, setPort] = useState("")
   const [isValidPort, setIsValidPort] = useState(false)
   const [token, setToken] = useState("")
+  const [isFormVisible, setIsFormVisible] = useState(false);
 
   const isNonMobile = useMediaQuery("(min-width:600px)");
 
@@ -43,11 +43,21 @@ useEffect(() => {
   };
 
   return (
-    <Box m="20px" p="0 38%">
-      <Typography color= "secondary" padding="1.2rem" component="h1" variant="h5" fontSize="2rem" textAlign="center">
-        Add cluster
-        </Typography>
-          <form onSubmit={handleFormSubmit}>
+    <div>
+      <Button onClick={()=> setIsFormVisible(!isFormVisible)} color="primary" variant="contained">
+        {isFormVisible ? "Add" : "Add"}
+      </Button>
+
+      <Dialog open={isFormVisible} onClose={()=> setIsFormVisible(!isFormVisible)} sx={{
+        "& .MuiDialogContent-root": {width: "24rem"},
+      }}>
+        <DialogTitle component="div">
+          <Typography color="secondary" variant="h5" fontSize="1.4rem" textAlign="center" padding="5px">
+            Add Cluster
+          </Typography>
+        </DialogTitle>
+        <DialogContent>
+        <form onSubmit={handleFormSubmit}>
             <Box
               display="flex"
               flexDirection="column"
@@ -58,7 +68,7 @@ useEffect(() => {
               }}
               >
                 <Box display="flex" alignItems="center">
-                  <InputLabel htmlFor="token" sx={{ marginRight: 1, width:"44%"}}>
+                  <InputLabel htmlFor="token" sx={{ marginRight: 1, width:"37%"}}>
                     Cluster Name:
                   </InputLabel>
                     <TextField
@@ -70,10 +80,11 @@ useEffect(() => {
                     name="token"
                     size="small"
                     color="secondary"
+                    autoComplete="off"
                     />
                 </Box>
                 <Box display="flex" alignItems="center">
-                  <InputLabel htmlFor="token" sx={{ marginRight: 1, width:"30%" }}>
+                  <InputLabel htmlFor="token" sx={{ marginRight: 1, width:"26%" }}>
                     FQDN/IP:
                   </InputLabel>
                     <TextField
@@ -85,11 +96,12 @@ useEffect(() => {
                     name="token"
                     size="small"
                     color="secondary"
+                    autoComplete="off"
                     sx={{flex: 1}}
                     />
                 </Box>
                 <Box display="flex" alignItems="center">
-                  <InputLabel htmlFor="token" sx={{ marginRight: 1, width:"30%"}}>
+                  <InputLabel htmlFor="token" sx={{ marginRight: 1, width:"26%"}}>
                     Port:
                   </InputLabel>
                     <TextField
@@ -102,37 +114,42 @@ useEffect(() => {
                     name="token"
                     size="small"
                     color="secondary"
+                    autoComplete="off"
                     sx={{flex: 1}}
                     />
                 </Box>
 
                 <Box display="flex" alignItems="center">
-                  <InputLabel htmlFor="token" sx={{ marginRight: 1, width:"30%"}}>
+                  <InputLabel htmlFor="token" sx={{ marginRight: 1, width:"26%"}}>
                     Token:
                   </InputLabel>
                     <TextField
                     fullWidth
                     variant="outlined"
-                    type="text"
+                    type="password"
                     onChange={(e) => setToken(e.target.value)}
                     value={token}
                     name="token"
                     size="small"
                     color="secondary"
+                    autoComplete="off"
                     sx={{flex: 1}}
                     />
                 </Box>
             </Box>
             <Box display="flex" mt="20px" justifyContent="space-between">
-              <Button type="submit" color="secondary" variant="contained" disabled={!clusterName || !fqdnIp || !token}>
+              <Button type="submit" color="secondary" variant="contained" disabled={!isValidClusterName || !isValidFdqnIp || !isValidPort || !clusterName || !fqdnIp || !token}>
                 Save
               </Button>
-              <Button type="submit" color="secondary" variant="contained" disabled={!clusterName || !fqdnIp || !token}>
+              <Button type="submit" color="secondary" variant="contained" disabled={!isValidClusterName || !isValidFdqnIp || !isValidPort || !clusterName || !fqdnIp || !token}>
                 Test
               </Button>
             </Box>
           </form>
-    </Box>
+        </DialogContent>
+      </Dialog>
+    </div>
   );
 };
+
 export default Form;
