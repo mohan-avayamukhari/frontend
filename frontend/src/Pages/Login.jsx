@@ -1,5 +1,4 @@
 import { Box, Button, TextField } from "@mui/material";
-import useMediaQuery from "@mui/material/useMediaQuery";
 import Typography from '@mui/material/Typography';
 import Avatar from '@mui/material/Avatar';
 import LockOutlinedIcon from '@mui/icons-material/LockOutlined';
@@ -10,7 +9,7 @@ import {FormControlLabel, Checkbox} from "@mui/material";
 
 
 const Login = () => {
-  const preferredMode = useMediaQuery('(prefers-color-scheme: dark)');
+  const preferredMode = window.matchMedia('(prefers-color-scheme: dark)').matches;
 
   const handleFormSubmit = (event) => {
     event.preventDefault();

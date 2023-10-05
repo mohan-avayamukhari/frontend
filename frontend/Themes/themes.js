@@ -1,4 +1,4 @@
-import { createContext, useState, useMemo } from "react";
+import { createContext, useState, useMemo, useEffect } from "react";
 import { createTheme } from "@mui/material/styles";
 
 // color design tokens export
@@ -200,6 +200,18 @@ export const ColorModeContext = createContext({
 
 export const useMode = () => {
   const [mode, setMode] = useState("dark");
+  const [themeLoaded, setThemeLoaded] = useState(false);
+
+  useEffect(() => {
+    // Detect the initial color scheme of the system
+    const prefersDarkMode = window.matchMedia('(prefers-color-scheme: dark)').matches;
+    setMode(prefersDarkMode ? "dark" : "light");
+
+    // Simulate an asynchronous theme loading
+    setTimeout(() => {
+      setThemeLoaded(true);
+    }, 1000); // Adjust the duration based on your needs
+  }, []);
 
   const colorMode = useMemo(
     () => ({
@@ -209,6 +221,7 @@ export const useMode = () => {
     []
   );
 
-  const theme = useMemo(() => createTheme(themeSettings(mode)), [mode]);
-  return [theme, colorMode];
+  const theme = useMemo(() => createTheme(themeSettings(mode, themeLoaded)), [mode, themeLoaded]);
+
+  return [theme, colorMode, themeLoaded];
 };

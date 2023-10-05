@@ -5,10 +5,6 @@ import Avatar from '@mui/material/Avatar';
 import LockOutlinedIcon from '@mui/icons-material/LockOutlined';
 import {FormControlLabel, Checkbox} from "@mui/material";
 
-
-
-
-
 const Login = () => {
   const preferredMode = useMediaQuery('(prefers-color-scheme: dark)');
 

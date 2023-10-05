@@ -26,3 +26,21 @@ html, body, #root, .app, .content{
 ::-webkit-scrollbar-track:hover{
   background: #555;
 }
+
+body.theme-loading {
+  visibility: hidden;
+}
+
+body.theme-loading * {
+  visibility: hidden;
+}
+
+body.theme-loading::before {
+  content: "Loading...";
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  font-size: 24px;
+  color: #000; 
+}

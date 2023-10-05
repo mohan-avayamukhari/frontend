@@ -1,9 +1,18 @@
-import { useState } from "react"
-import { Navigate } from "react-router-dom"
+import { Navigate } from "react-router-dom";
+import Layout from "./Layout";
 
-const PrivateRoute = ({children}) => {
-  const [jwt, setJwt] = useState(true)
-  return jwt? children : <Navigate to="/login"/>
-}
+const PrivateRoute = ({ children, isCollapsed, setIsCollapsed }) => {
+  // Replace the following line with your actual authentication logic
+  const jwt = localStorage.getItem("jwt");
+  const isAuthenticated = Boolean(jwt);
 
-export default PrivateRoute
+  return !isAuthenticated ? (
+    <Layout isCollapsed={isCollapsed} setIsCollapsed={setIsCollapsed}>
+      {children}
+    </Layout>
+  ) : (
+    <Navigate to="/login" />
+  );
+};
+
+export default PrivateRoute;

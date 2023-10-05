@@ -1,6 +1,7 @@
-import { Box, InputLabel, Button, Dialog, DialogContent, DialogTitle, TextField, Typography } from "@mui/material";
+import { Box, InputLabel, IconButton, Button, Dialog, DialogContent, DialogTitle, TextField, Typography } from "@mui/material";
 import useMediaQuery from "@mui/material/useMediaQuery";
 import { useState, useEffect, useMemo } from "react";
+import {AddOutlined} from "@mui/icons-material"
 
 const Form = () => {
 
@@ -17,8 +18,7 @@ const Form = () => {
 
 
   const nameRegex = useMemo(() => /^[a-zA-Z0-9]+$/, []); 
-  const fqdnRegex = useMemo(() => /^(https?|ftp):\/\/[^\s/$.?#].[^\s]*$/, []);
-  const ipRegex = useMemo(() => /^(25[0-5]|2[0-4][0-9]|[0-1]?[0-9]?[0-9])(\.(25[0-5]|2[0-4][0-9]|[0-1]?[0-9]?[0-9])){3}$/, [])
+  const fqdnIpRegex = useMemo(() => /^(?:(?:https?|ftp):\/\/[^\s/$.?#].[^\s]*)|(?:[a-zA-Z0-9-]+\.[a-zA-Z]{2,}(?:\.[a-zA-Z]{2,})*|\b(?:\d{1,3}\.){3}\d{1,3}\b)$/, []);
   const portRegex = useMemo(() => /^([1-9]\d{0,4}|[1-5]\d{4}|6[0-4]\d{3}|65[0-4]\d{2}|655[0-2]\d|6553[0-5])$/, [])
   
   
@@ -27,12 +27,9 @@ const Form = () => {
 }, [clusterName, nameRegex])
 
 useEffect(() => {
-  setIsValidFdqnIp(fqdnRegex.test(fqdnIp));
-}, [fqdnIp, fqdnRegex])
+  setIsValidFdqnIp(fqdnIpRegex.test(fqdnIp));
+}, [fqdnIp, fqdnIpRegex]);
 
-useEffect(() => {
-  setIsValidFdqnIp(ipRegex.test(fqdnIp));
-}, [fqdnIp, ipRegex])
 
 useEffect(() => {
   setIsValidPort(portRegex.test(port));
@@ -44,12 +41,21 @@ useEffect(() => {
 
   return (
     <div>
-      <Button onClick={()=> setIsFormVisible(!isFormVisible)} color="primary" variant="contained">
-        {isFormVisible ? "Add" : "Add"}
-      </Button>
+      <IconButton
+      onClick={() => setIsFormVisible(!isFormVisible)}
+      sx={{
+        margin: "0 0 0 0.5rem",
+        '& .MuiSvgIcon-root': {
+          fontSize: 32,
+        },
+      }}
+      >
+      <AddOutlined />
+    </IconButton>
 
       <Dialog open={isFormVisible} onClose={()=> setIsFormVisible(!isFormVisible)} sx={{
         "& .MuiDialogContent-root": {width: "24rem"},
+        bottom: '33%'
       }}>
         <DialogTitle component="div">
           <Typography color="secondary" variant="h5" fontSize="1.4rem" textAlign="center" padding="5px">
@@ -138,10 +144,10 @@ useEffect(() => {
                 </Box>
             </Box>
             <Box display="flex" mt="20px" justifyContent="space-between">
-              <Button type="submit" color="secondary" variant="contained" disabled={!isValidClusterName || !isValidFdqnIp || !isValidPort || !clusterName || !fqdnIp || !token}>
+              <Button type="submit" color="secondary" variant="contained" disabled={!isValidClusterName || !isValidFdqnIp || (port && !isValidPort) ||!clusterName || !fqdnIp || !token}>
                 Save
               </Button>
-              <Button type="submit" color="secondary" variant="contained" disabled={!isValidClusterName || !isValidFdqnIp || !isValidPort || !clusterName || !fqdnIp || !token}>
+              <Button type="submit" color="secondary" variant="contained" disabled={!isValidClusterName || !isValidFdqnIp || (port && !isValidPort) || !clusterName || !fqdnIp || !token}>
                 Test
               </Button>
             </Box>

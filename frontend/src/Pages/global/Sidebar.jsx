@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { ProSidebar, Menu, MenuItem } from "react-pro-sidebar";
 import { Box, IconButton, Typography, useTheme } from "@mui/material";
-import { Link } from "react-router-dom";
+import { Link, useLocation} from "react-router-dom";
 import "react-pro-sidebar/dist/css/styles.css";
 import { tokens } from "../../../Themes/themes.js";
 import {
@@ -15,12 +15,14 @@ import {
   GroupOutlined,
 } from "@mui/icons-material";
 
-const Item = ({ title, to, icon, selected, setSelected }) => {
+const Item = ({ title, path, to, icon, setSelected }) => {
   const theme = useTheme();
   const colors = tokens(theme.palette.mode);
+  const location = useLocation();
+
   return (
     <MenuItem
-      active={selected === title}
+      active={location.pathname === path}
       style={{
         color: colors.grey[100],
       }}
@@ -34,10 +36,11 @@ const Item = ({ title, to, icon, selected, setSelected }) => {
 };
 
 const Sidebar = ({isCollapsed, setIsCollapsed}) => {
+  const preferredMode = window.matchMedia('(prefers-color-scheme: dark)').matches
   const theme = useTheme();
   const colors = tokens(theme.palette.mode);
-  const [selected, setSelected] = useState("Dashboard");
-
+  const [selected, setSelected] = useState("");
+  
   return (
     <Box
       sx={{
@@ -51,11 +54,12 @@ const Sidebar = ({isCollapsed, setIsCollapsed}) => {
           padding: "5px 35px 5px 20px !important",
         },
         "& .pro-inner-item:hover": {
-          color: `${colors.greenAccent[500]} !important`,
+          color: `${preferredMode ? "white" : "black" } !important`,
         },
         "& .pro-menu-item.active": {
-          color: `${colors.greenAccent[500]} !important`,
+          backgroundColor: `${preferredMode ? "#242424" : "#adb5bd"} !important`,
         },
+        
       }}
     >
       <ProSidebar collapsed={isCollapsed}>
@@ -107,9 +111,10 @@ const Sidebar = ({isCollapsed, setIsCollapsed}) => {
             </Box>
           )}
 
-          <Box paddingLeft={isCollapsed ? undefined : "10%"}>
+          <Box>
             <Item
               title="Dashboard"
+              path="/dashboard"
               to="/"
               icon={<HomeOutlined />}
               selected={selected}
@@ -128,6 +133,7 @@ const Sidebar = ({isCollapsed, setIsCollapsed}) => {
 
             <Item
               title="Discovery"
+              path="/discovery"
               to="/discovery"
               icon={<TravelExploreOutlined />}
               selected={selected}
@@ -135,6 +141,7 @@ const Sidebar = ({isCollapsed, setIsCollapsed}) => {
             />
             <Item
               title="DR Policy"
+              path="/dr-policy"
               to="/dr-policy"
               icon={<ListAltOutlined />}
               selected={selected}
@@ -142,6 +149,7 @@ const Sidebar = ({isCollapsed, setIsCollapsed}) => {
             />
             <Item
               title="Reports"
+              path="/reports"
               to="/reports"
               icon={<ReportGmailerrorredOutlined />}
               selected={selected}
@@ -160,6 +168,7 @@ const Sidebar = ({isCollapsed, setIsCollapsed}) => {
 
             <Item
               title="Create New User"
+              path="/create-user"
               to="/create-user"
               icon={<PersonAddOutlined />}
               selected={selected}
@@ -167,6 +176,7 @@ const Sidebar = ({isCollapsed, setIsCollapsed}) => {
             />
             <Item
               title="All Users"
+              path="/all-users"
               to="/all-users"
               icon={<GroupOutlined />}
               selected={selected}
@@ -174,7 +184,8 @@ const Sidebar = ({isCollapsed, setIsCollapsed}) => {
             />
             <Item
               title="FAQ Page"
-              to="/faq"
+              path="/faqs"
+              to="/faqs"
               icon={<HelpOutlineOutlined />}
               selected={selected}
               setSelected={setSelected}
