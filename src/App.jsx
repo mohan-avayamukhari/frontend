@@ -18,7 +18,7 @@ const App = () => {
         <Routes>
           <Route path="/login" element={<SignIn/>}/>
           <Route path="/dashboard" element={<PrivateRoute isCollapsed={isCollapsed} setIsCollapsed={setIsCollapsed}><Dashboard/></PrivateRoute>}/>
-          <Route path="/discovery" element={<PrivateRoute isCollapsed={isCollapsed} setIsCollapsed={setIsCollapsed}><Discovery/></PrivateRoute>}/>
+          <Route path="/discovery" element={<PrivateRoute isCollapsed={isCollapsed} setIsCollapsed={setIsCollapsed}><Discovery isCollapsed={isCollapsed}/></PrivateRoute>}/>
           <Route path="*" element={<Navigate to="/dashboard" />} />
         </Routes>
      </ThemeProvider>

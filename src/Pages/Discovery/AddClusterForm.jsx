@@ -1,6 +1,7 @@
-import { Box, InputLabel, Button, Dialog, DialogContent, DialogTitle, TextField, Typography } from "@mui/material";
+import { Box, InputLabel, Button, Dialog, DialogContent, DialogTitle, TextField, Typography, IconButton } from "@mui/material";
 import useMediaQuery from "@mui/material/useMediaQuery";
 import { useState, useEffect, useMemo } from "react";
+import {AddOutlined} from "@mui/icons-material"
 
 const Form = () => {
 
@@ -44,9 +45,9 @@ useEffect(() => {
 
   return (
     <div>
-      <Button onClick={()=> setIsFormVisible(!isFormVisible)} color="primary" variant="contained">
-        {isFormVisible ? "Add" : "Add"}
-      </Button>
+      <IconButton onClick={()=> setIsFormVisible(!isFormVisible)} color="secondary" variant="contained" >
+        <AddOutlined fontSize="large"/>
+      </IconButton>
 
       <Dialog open={isFormVisible} onClose={()=> setIsFormVisible(!isFormVisible)} sx={{
         "& .MuiDialogContent-root": {width: "24rem"},
