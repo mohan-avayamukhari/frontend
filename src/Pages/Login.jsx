@@ -1,16 +1,33 @@
+import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { Box, Button, TextField } from "@mui/material";
 import useMediaQuery from "@mui/material/useMediaQuery";
 import Typography from '@mui/material/Typography';
 import Avatar from '@mui/material/Avatar';
 import LockOutlinedIcon from '@mui/icons-material/LockOutlined';
-import {FormControlLabel, Checkbox} from "@mui/material";
+//import {FormControlLabel, Checkbox} from "@mui/material";
+import {login} from "../Services/Login.js";
 
-const Login = () => {
+const Login = ({setIsAuthenticated}) => {
   const preferredMode = useMediaQuery('(prefers-color-scheme: dark)');
-
+  const [name, setName] = useState("")
+  const [psw, setPsw] = useState("")
+  const navigate = useNavigate();
+  
   const handleFormSubmit = (event) => {
     event.preventDefault();
+    login(name, psw).then((statusCode) => {
+      if (statusCode === 200){
+        setIsAuthenticated(true)
+        navigate('/dashboard')
+      }
+      setName("");
+      setPsw("");
+    }).catch((error) => {
+      console.error('Login failed:', error);
+    });
   };
+  
 
   return (
     <Box p="10% 38%" width="100%" height="100%" sx={{ backgroundColor: preferredMode ? 'primary' : 'white' }}>
@@ -32,6 +49,7 @@ const Login = () => {
             margin="normal"
             required
             fullWidth
+            onChange={(e)=>setName(e.target.value)}
             type="text"
             id="user"
             label="User Name"
@@ -61,6 +79,7 @@ const Login = () => {
             margin="normal"
             required
             fullWidth
+            onChange={(e)=> setPsw(e.target.value)}
             type="password"
             id="psw"
             label="Password"
@@ -86,7 +105,7 @@ const Login = () => {
               },
             }}
           />
-          <FormControlLabel
+          {/*<FormControlLabel
             sx={{
               color: preferredMode ? 'white' : 'black',
               '& .MuiCheckbox-root': { color: preferredMode ? 'white' : 'black' },
@@ -94,8 +113,9 @@ const Login = () => {
             }}
             control={<Checkbox value="remember" color="primary" />}
             label="Remember me"
-          />
+          />*/}
           <Button
+          disabled={!name || !psw}
           type="submit"
           fullWidth
           variant="contained"

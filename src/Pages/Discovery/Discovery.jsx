@@ -3,24 +3,27 @@ import { CardContent, Container, Grid, useTheme } from "@mui/material";
 import Form from "./AddClusterForm";
 import { Box } from "@mui/system";
 import {tokens} from "../../../Themes/themes.js"
+import { useState, useEffect } from "react";
+import { getAllClusters } from "../../Services/discovery";
 
-const rows = [
-  {
-    id: 1,
-    username: "@MUI",
-    age: 20
-  }
-];
 
 const Discovery = ({isCollapsed}) => {
   const theme = useTheme();
   const colors = tokens(theme.palette.mode);
-  console.log(isCollapsed);
+  const [rows, setRows] = useState([])
+
+  useEffect(() => {
+    getAllClusters().then(data => {
+        setRows(data);
+      }).catch(error => {
+        console.error('Error fetching user profile:', error);
+      });
+    }, []);
 
   return (
     <div>
       <Box padding="0 1rem">
-      <Form/>
+      <Form rows={rows} setRows={setRows}/>
       </Box>
       <Container sx={{margin: "0", padding: "0 !important"}}>
         <CardContent>
@@ -59,19 +62,23 @@ const Discovery = ({isCollapsed}) => {
                 columnHeaderHeight={38}
                 columns={[
                   {
-                    field: "ID",
+                    headerName: "ID",
+                    field: "id",
                     flex: 0.5,
                   },
                   {
-                    field: "Name",
+                    headerName:"Cluster Name",
+                    field: "clusterName",
                     flex: 1,
                   },
                   {
-                    field: "FQDN/IP",
+                    headerName: "FQDN/IP",
+                    field: "fqdnIp",
                     flex: 1,
                   },
                   {
-                    field: "Port",
+                    headerName: "Port",
+                    field: "port",
                     flex: 1,
                   },
                 ]}

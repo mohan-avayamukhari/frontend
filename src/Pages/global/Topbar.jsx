@@ -1,13 +1,54 @@
-import { Box, IconButton, useTheme } from "@mui/material";
-import { useMediaQuery } from "@mui/material";
+import React from "react";
+import { Box, IconButton, useMediaQuery, Menu, MenuItem, } from "@mui/material";
+import PopupState, {bindTrigger, bindMenu} from "material-ui-popup-state";
 import { useContext, useEffect } from "react";
-import { ColorModeContext, tokens } from "../../../Themes/themes.js";
+import { ColorModeContext } from "../../../Themes/themes.js";
 import NotificationsOutlinedIcon from "@mui/icons-material/NotificationsOutlined";
 import SettingsOutlinedIcon from "@mui/icons-material/SettingsOutlined";
+import { useNavigate } from "react-router-dom";
 
-const Topbar = ({isCollapsed}) => {
-  const theme = useTheme();
-  const colors = tokens(theme.palette.mode);
+
+const NotificationsButton = () => {
+  return (
+    <IconButton>
+      <NotificationsOutlinedIcon />
+    </IconButton>
+  );
+};
+
+// Component for handling settings menu
+const SettingsMenu = ({setIsAuthenticated}) => {
+  const navigate = useNavigate();
+
+  const handelLogout = () => {
+    document.cookie = "accessToken=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;";
+    setIsAuthenticated(false)
+    navigate('/login')
+  }
+
+  return (
+    <PopupState variant="popover" popupId="demo-popup-menu">
+      {(popupState) => (
+        <React.Fragment>
+          {/* Settings button */}
+          <IconButton variant="contained" {...bindTrigger(popupState)}>
+            <SettingsOutlinedIcon/>
+          </IconButton>
+          {/* Settings menu */}
+          <Menu {...bindMenu(popupState)}>
+            <MenuItem onClick={popupState.close}>Profile</MenuItem>
+            <MenuItem onClick={popupState.close}>My account</MenuItem>
+            <MenuItem onClick={handelLogout}>Logout</MenuItem>
+          </Menu>
+        </React.Fragment>
+      )}
+    </PopupState>
+  );
+};
+
+// Main Topbar component
+const Topbar = ({ isCollapsed, setIsAuthenticated}) => {
+
   const colorMode = useContext(ColorModeContext);
 
   const preferredMode = useMediaQuery('(prefers-color-scheme: dark)');
@@ -17,23 +58,11 @@ const Topbar = ({isCollapsed}) => {
   }, [preferredMode, colorMode]);
 
   return (
-    <Box width= {isCollapsed?"99rem":"87rem"} sx={{transition:"width 0.3s ease-in-out"}}>
-      <Box display="flex" justifyContent="space-between" p={2}>
-      <Box
-        display="flex"
-        backgroundColor={colors.primary[400]}
-        borderRadius="3px"
-      >
+    <Box width={isCollapsed ? "99rem" : "87rem"} sx={{ transition: "width 0.3s ease-in-out" }}>
+      <Box display="flex" justifyContent="right" p={2}>
+        <NotificationsButton />
+        <SettingsMenu setIsAuthenticated={setIsAuthenticated}/>
       </Box>
-      <Box display="flex">
-        <IconButton>
-          <NotificationsOutlinedIcon />
-        </IconButton>
-        <IconButton>
-          <SettingsOutlinedIcon />
-        </IconButton>
-      </Box>
-    </Box>
     </Box>
   );
 };

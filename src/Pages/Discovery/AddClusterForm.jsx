@@ -2,46 +2,38 @@ import { Box, InputLabel, Button, Dialog, DialogContent, DialogTitle, TextField,
 import useMediaQuery from "@mui/material/useMediaQuery";
 import { useState, useEffect, useMemo } from "react";
 import {AddOutlined} from "@mui/icons-material"
+import { Formik } from "formik";
+import * as yup from "yup"
 
-const Form = () => {
-
-  const [clusterName, setClusterName] = useState("")
-  const [isValidClusterName, setIsValidClusterName] = useState(false)
-  const [fqdnIp, setFqdnIp] = useState("")
-  const [isValidFdqnIp, setIsValidFdqnIp] = useState(false)
-  const [port, setPort] = useState("")
-  const [isValidPort, setIsValidPort] = useState(false)
-  const [token, setToken] = useState("")
+const Form = ({rows, setRows}) => {
   const [isFormVisible, setIsFormVisible] = useState(false);
 
-  const isNonMobile = useMediaQuery("(min-width:600px)");
-
-
-  const nameRegex = useMemo(() => /^[a-zA-Z0-9]+$/, []); 
-  const fqdnRegex = useMemo(() => /^(https?|ftp):\/\/[^\s/$.?#].[^\s]*$/, []);
-  const ipRegex = useMemo(() => /^(25[0-5]|2[0-4][0-9]|[0-1]?[0-9]?[0-9])(\.(25[0-5]|2[0-4][0-9]|[0-1]?[0-9]?[0-9])){3}$/, [])
-  const portRegex = useMemo(() => /^([1-9]\d{0,4}|[1-5]\d{4}|6[0-4]\d{3}|65[0-4]\d{2}|655[0-2]\d|6553[0-5])$/, [])
-  
-  
-  useEffect(() => {
-    setIsValidClusterName(nameRegex.test(clusterName));
-}, [clusterName, nameRegex])
-
-useEffect(() => {
-  setIsValidFdqnIp(fqdnRegex.test(fqdnIp));
-}, [fqdnIp, fqdnRegex])
-
-useEffect(() => {
-  setIsValidFdqnIp(ipRegex.test(fqdnIp));
-}, [fqdnIp, ipRegex])
-
-useEffect(() => {
-  setIsValidPort(portRegex.test(port));
-}, [port, portRegex])
-
-  const handleFormSubmit = (values) => {
-    console.log(values);
+  const initialValues = {
+    id: Math.random(),
+    clusterName: "",
+    fqdnIp: "",
+    port: "",
+    token: "",
   };
+
+  const isNonMobile = useMediaQuery("(min-width:600px)");
+  const nameRegex = useMemo(() => /^[a-zA-Z0-9]+$/, []); 
+  const fqdnIpRegex = useMemo(() => /^(?:(?:https?|ftp):\/\/[^\s/$.?#].[^\s]*)|(?:[a-zA-Z0-9-]+\.[a-zA-Z]{2,}(?:\.[a-zA-Z]{2,})*|\b(?:\d{1,3}\.){3}\d{1,3}\b)$/, []);
+  const portRegex = useMemo(() => /^([1-9]\d{0,4}|[1-5]\d{4}|6[0-4]\d{3}|65[0-4]\d{2}|655[0-2]\d|6553[0-5])$/, [])
+
+  const checkoutSchema = yup.object().shape({
+    clusterName: yup.string().matches(nameRegex, "Not a valid cluster name").required("required"),
+    fqdnIp: yup.string().matches(fqdnIpRegex, "Not a valid FQDN or an IP address").required("required"),
+    port: yup.string().matches(portRegex, "Phone number is not valid"),
+    token: yup.string().required("required"),
+  });
+
+const handleFormSubmit = (values) => {
+  console.log("form submitted");
+  values.port = values.port === ""? "6443": values.port 
+  setRows(rows.concat(values))
+  setIsFormVisible(false)
+}
 
   return (
     <div>
@@ -58,7 +50,18 @@ useEffect(() => {
           </Typography>
         </DialogTitle>
         <DialogContent>
-        <form onSubmit={handleFormSubmit}>
+        <Formik
+        onSubmit={handleFormSubmit}
+        initialValues={initialValues}
+        validationSchema={checkoutSchema}>
+        {({
+          values,
+          errors,
+          touched,
+          handleBlur,
+          handleChange,
+          handleSubmit,
+        }) => (<form onSubmit={handleSubmit}>
             <Box
               display="flex"
               flexDirection="column"
@@ -76,12 +79,12 @@ useEffect(() => {
                     fullWidth
                     variant="outlined"
                     type="text"
-                    onChange={(e) => setClusterName(e.target.value)}
-                    value={clusterName}
-                    name="token"
-                    size="small"
-                    color="secondary"
-                    autoComplete="off"
+                    onBlur={handleBlur}
+                    onChange={handleChange}
+                    value={values.clusterName}
+                    name="clusterName"
+                    error={!!touched.clusterName && !!errors.clusterName}
+                    helperText={touched.clusterName && errors.clusterName}
                     />
                 </Box>
                 <Box display="flex" alignItems="center">
@@ -92,12 +95,12 @@ useEffect(() => {
                     fullWidth
                     variant="outlined"
                     type="text"
-                    onChange={(e) => setFqdnIp(e.target.value)}
-                    value={fqdnIp}
-                    name="token"
-                    size="small"
-                    color="secondary"
-                    autoComplete="off"
+                    onBlur={handleBlur}
+                    onChange={handleChange}
+                    value={values.fqdnIp}
+                    name="fqdnIp"
+                    error={!!touched.fqdnIp && !!errors.fqdnIp}
+                    helperText={touched.fqdnIp && errors.fqdnIp}
                     sx={{flex: 1}}
                     />
                 </Box>
@@ -109,13 +112,13 @@ useEffect(() => {
                     fullWidth
                     variant="outlined"
                     type="text"
+                    onBlur={handleBlur}
+                    onChange={handleChange}
+                    value={values.port}
+                    name="port"
                     placeholder="6443"
-                    onChange={(e) => setPort(e.target.value)}
-                    value={port}
-                    name="token"
-                    size="small"
-                    color="secondary"
-                    autoComplete="off"
+                    error={!!touched.port && !!errors.port}
+                    helperText={touched.port && errors.port}
                     sx={{flex: 1}}
                     />
                 </Box>
@@ -128,25 +131,27 @@ useEffect(() => {
                     fullWidth
                     variant="outlined"
                     type="password"
-                    onChange={(e) => setToken(e.target.value)}
-                    value={token}
+                    onBlur={handleBlur}
+                    onChange={handleChange}
+                    value={values.token}
                     name="token"
-                    size="small"
-                    color="secondary"
-                    autoComplete="off"
+                    error={!!touched.token && !!errors.token}
+                    helperText={touched.token && errors.token}
                     sx={{flex: 1}}
                     />
                 </Box>
             </Box>
-            <Box display="flex" mt="20px" justifyContent="space-between">
-              <Button type="submit" color="secondary" variant="contained" disabled={!isValidClusterName || !isValidFdqnIp || !isValidPort || !clusterName || !fqdnIp || !token}>
-                Save
+            <Box display="flex" mt="20px" justifyContent="right">
+              <Button type="submit" color="secondary" variant="contained">
+                Add
               </Button>
-              <Button type="submit" color="secondary" variant="contained" disabled={!isValidClusterName || !isValidFdqnIp || !isValidPort || !clusterName || !fqdnIp || !token}>
+              {/*<Button type="button" color="secondary" variant="contained">
                 Test
-              </Button>
+            </Button>*/}
             </Box>
           </form>
+        )}
+        </Formik>
         </DialogContent>
       </Dialog>
     </div>
