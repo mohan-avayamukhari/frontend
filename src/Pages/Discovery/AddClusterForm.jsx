@@ -1,19 +1,17 @@
-import { Box, InputLabel, Button, Dialog, DialogContent, DialogTitle, TextField, Typography, IconButton } from "@mui/material";
+import { Box, InputLabel, Button, Dialog, DialogContent, DialogTitle, TextField, Typography, Snackbar, Alert } from "@mui/material";
 import useMediaQuery from "@mui/material/useMediaQuery";
-import { useState, useEffect, useMemo } from "react";
-import {AddOutlined} from "@mui/icons-material"
+import { useState, useMemo } from "react";
 import { Formik } from "formik";
 import * as yup from "yup"
+import { addCluster, updateCluster, getAllClusters } from "../../Services/discovery";
 
-const Form = ({rows, setRows}) => {
-  const [isFormVisible, setIsFormVisible] = useState(false);
-
+const Form = ({setRows, editId, clusterName, fqdnIp, port, token, isFormVisible, setIsFormVisible, action, message}) => {
+  const [isClusterAdded, setIsClusterAdded] = useState(false);
   const initialValues = {
-    id: Math.random(),
-    clusterName: "",
-    fqdnIp: "",
-    port: "",
-    token: "",
+    clusterName: clusterName,
+    fqdnIp: fqdnIp,
+    port: port,
+    token: token,
   };
 
   const isNonMobile = useMediaQuery("(min-width:600px)");
@@ -29,20 +27,49 @@ const Form = ({rows, setRows}) => {
   });
 
 const handleFormSubmit = (values) => {
-  console.log("form submitted");
   values.port = values.port === ""? "6443": values.port 
-  setRows(rows.concat(values))
   setIsFormVisible(false)
+  addCluster(values).then(statusCode => {
+    if(statusCode === 201){
+      setIsClusterAdded(true)
+      getAllClusters().then(data => {
+        const rowsWithId = data.map((row, index) => ({ ...row, no: index + 1 }));
+        setRows(rowsWithId);
+      }).catch(error => {
+        console.error('Error fetching user profile:', error);
+      });
+    }
+  })
 }
+
+const handleEditSubmit = (values) => {
+  values.port = values.port === ""? "6443": values.port 
+  setIsFormVisible(false)
+  updateCluster(editId, values).then(statusCode => {
+    if(statusCode === 200){
+      setIsClusterAdded(true)
+      getAllClusters().then(data => {
+        const rowsWithId = data.map((row, index) => ({ ...row, no: index + 1 }));
+        setRows(rowsWithId);
+      }).catch(error => {
+        console.error('Error fetching user profile:', error);
+      });
+    }
+  })
+}
+
+const handleClose = (event, reason) => {
+  if (reason === 'clickaway') {
+    return;
+  }
+  setIsClusterAdded(false);
+};
 
   return (
     <div>
-      <IconButton onClick={()=> setIsFormVisible(!isFormVisible)} color="secondary" variant="contained" >
-        <AddOutlined fontSize="large"/>
-      </IconButton>
-
       <Dialog open={isFormVisible} onClose={()=> setIsFormVisible(!isFormVisible)} sx={{
         "& .MuiDialogContent-root": {width: "24rem"},
+        bottom: '33%'
       }}>
         <DialogTitle component="div">
           <Typography color="secondary" variant="h5" fontSize="1.4rem" textAlign="center" padding="5px">
@@ -51,7 +78,7 @@ const handleFormSubmit = (values) => {
         </DialogTitle>
         <DialogContent>
         <Formik
-        onSubmit={handleFormSubmit}
+        onSubmit={action === "Add"? handleFormSubmit : handleEditSubmit}
         initialValues={initialValues}
         validationSchema={checkoutSchema}>
         {({
@@ -72,13 +99,15 @@ const handleFormSubmit = (values) => {
               }}
               >
                 <Box display="flex" alignItems="center">
-                  <InputLabel htmlFor="token" sx={{ marginRight: 1, width:"37%"}}>
+                  <InputLabel htmlFor="clusterName" sx={{ marginRight: 1, width:"37%"}}>
                     Cluster Name:
                   </InputLabel>
                     <TextField
                     fullWidth
                     variant="outlined"
                     type="text"
+                    color="secondary"
+                    autoComplete="off"
                     onBlur={handleBlur}
                     onChange={handleChange}
                     value={values.clusterName}
@@ -88,13 +117,15 @@ const handleFormSubmit = (values) => {
                     />
                 </Box>
                 <Box display="flex" alignItems="center">
-                  <InputLabel htmlFor="token" sx={{ marginRight: 1, width:"26%" }}>
+                  <InputLabel htmlFor="fqdnIp" sx={{ marginRight: 1, width:"26%" }}>
                     FQDN/IP:
                   </InputLabel>
                     <TextField
                     fullWidth
                     variant="outlined"
                     type="text"
+                    color="secondary"
+                    autoComplete="off"
                     onBlur={handleBlur}
                     onChange={handleChange}
                     value={values.fqdnIp}
@@ -105,13 +136,15 @@ const handleFormSubmit = (values) => {
                     />
                 </Box>
                 <Box display="flex" alignItems="center">
-                  <InputLabel htmlFor="token" sx={{ marginRight: 1, width:"26%"}}>
+                  <InputLabel htmlFor="port" sx={{ marginRight: 1, width:"26%"}}>
                     Port:
                   </InputLabel>
                     <TextField
                     fullWidth
                     variant="outlined"
+                    color="secondary"
                     type="text"
+                    autoComplete="off"
                     onBlur={handleBlur}
                     onChange={handleChange}
                     value={values.port}
@@ -130,6 +163,7 @@ const handleFormSubmit = (values) => {
                     <TextField
                     fullWidth
                     variant="outlined"
+                    color="secondary"
                     type="password"
                     onBlur={handleBlur}
                     onChange={handleChange}
@@ -141,19 +175,24 @@ const handleFormSubmit = (values) => {
                     />
                 </Box>
             </Box>
-            <Box display="flex" mt="20px" justifyContent="right">
-              <Button type="submit" color="secondary" variant="contained">
-                Add
-              </Button>
-              {/*<Button type="button" color="secondary" variant="contained">
-                Test
-            </Button>*/}
+            <Box display="flex" mt="20px" justifyContent="space-between">
+            <Button type="button" onClick={() => setIsFormVisible(false)} color="secondary" variant="contained">
+                Cancel
+            </Button>
+            <Button type="submit" color="secondary" variant="contained">
+              {action}
+            </Button>
             </Box>
           </form>
         )}
         </Formik>
         </DialogContent>
       </Dialog>
+      <Snackbar open={isClusterAdded} autoHideDuration={5000} onClose={handleClose} anchorOrigin={{vertical: 'bottom', horizontal:"right"}}>
+        <Alert onClose={handleClose} severity="success" sx={{ width: '100%' }} >
+          {message}
+        </Alert>
+      </Snackbar>
     </div>
   );
 };

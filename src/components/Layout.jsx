@@ -4,22 +4,28 @@ import { useIdleTimer } from "react-idle-timer";
 import Sidebar from "../Pages/global/sidebar";
 import Topbar from "../Pages/global/Topbar";
 import { useState, useEffect } from "react";
+import { removeToken } from "../Services/Login";
 
-const Layout = ({ children, isCollapsed, setIsCollapsed, setIsAuthenticated }) => {
+const Layout = ({ children, isCollapsed, setIsCollapsed, }) => {
   const timeout = parseInt(import.meta.env.VITE_REACT_APP_TIME_OUT, 10) * 60 * 1000;
   const promptBeforeIdle = 30000
   const [state, setState] = useState('Active');
   const [remaining, setRemaining] = useState(timeout);
   const [open, setOpen] = useState(false);
-  const navigate = useNavigate
+  const navigate = useNavigate;
 
   const onIdle = () => {
     setState('Idle');
     setOpen(false);
-    localStorage.setItem('isAuthenticated', JSON.stringify(false));
-    setIsAuthenticated(false)
-    navigate('/login')
+    removeToken()
   };
+
+  useEffect(() => {
+    if (state === 'Idle') {
+
+      navigate("/login")
+    }
+  }, [navigate, state]);
 
   const onActive = () => {
     setState('Active');
@@ -70,7 +76,7 @@ const Layout = ({ children, isCollapsed, setIsCollapsed, setIsAuthenticated }) =
   <div className="app">
     <Sidebar isCollapsed={isCollapsed} setIsCollapsed={setIsCollapsed} />
     <Box display="flex" flexDirection="column">
-      <Topbar isCollapsed={isCollapsed} setIsAuthenticated={setIsAuthenticated}/>
+      <Topbar isCollapsed={isCollapsed}/>
       <main className="content">{children}</main>
       <Dialog open={open} sx={{margin: "0"}}>
         <DialogTitle component="div">

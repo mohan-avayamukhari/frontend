@@ -1,32 +1,70 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { Box, Button, TextField } from "@mui/material";
 import useMediaQuery from "@mui/material/useMediaQuery";
 import Typography from '@mui/material/Typography';
 import Avatar from '@mui/material/Avatar';
 import LockOutlinedIcon from '@mui/icons-material/LockOutlined';
-//import {FormControlLabel, Checkbox} from "@mui/material";
+import { Form, Formik } from "formik";
+import * as yup from "yup";
 import {login} from "../Services/Login.js";
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
-const Login = ({setIsAuthenticated}) => {
+const Login = () => {
   const preferredMode = useMediaQuery('(prefers-color-scheme: dark)');
-  const [name, setName] = useState("")
-  const [psw, setPsw] = useState("")
   const navigate = useNavigate();
-  
-  const handleFormSubmit = (event) => {
-    event.preventDefault();
-    login(name, psw).then((statusCode) => {
-      if (statusCode === 200){
-        setIsAuthenticated(true)
-        navigate('/dashboard')
-      }
-      setName("");
-      setPsw("");
-    }).catch((error) => {
-      console.error('Login failed:', error);
-    });
+  const [isButtonDisabled, setButtonDisabled] = useState(false);
+  const [error, setError] = useState("")
+  const [showToast, setShowToast] = useState(false)
+
+  const initialValues = {
+    name: "",
+    psw: "",
   };
+
+  const checkoutSchema = yup.object().shape({
+    name: yup.string().required("username is required"),
+    psw: yup.string().required("password is required")
+  });
+
+
+  useEffect(() => {
+    if (error && showToast) {
+      toast.error(error, 
+        {
+          position: "top-center",
+          autoClose: 5000,
+          hideProgressBar: true,
+          closeOnClick: true,
+          pauseOnHover: true,
+          draggable: true,
+          progress: undefined,
+          theme: "dark",
+        })
+    }
+  }, [error, showToast]);
+
+const handleFormSubmit = async (values) => {
+  try {
+    setButtonDisabled(true);
+    await login(values).then(() =>{
+    navigate('/dashboard');
+  }) 
+  }catch (error) {
+    let errorMessage = "An error occurred";
+    if (error.response.status == 404){
+      errorMessage = "User does not exist"
+    }else if(error.response.status == 401){
+      errorMessage = "Wrong password";
+    }
+    setButtonDisabled(false);
+    setError(errorMessage);
+    setShowToast(true)
+  }finally{
+    setButtonDisabled(false)
+  }
+};
   
 
   return (
@@ -44,99 +82,83 @@ const Login = ({setIsAuthenticated}) => {
         <Typography component="h1" variant="h5" fontSize="2rem" color={preferredMode ? 'white' : 'black'}>
           Sign in
         </Typography>
-        <Box component="form" onSubmit={handleFormSubmit} noValidate sx={{ mt: 1 }}>
+        <Formik
+        onSubmit={handleFormSubmit}
+        initialValues={initialValues}
+        validationSchema={checkoutSchema}>
+        {({
+          values,
+          errors,
+          touched,
+          handleBlur,
+          handleChange,
+          handleSubmit,
+        }) => (<Form onSubmit={handleSubmit}>
         <TextField
-            margin="normal"
-            required
-            fullWidth
-            onChange={(e)=>setName(e.target.value)}
-            type="text"
-            id="user"
-            label="User Name"
-            name="user"
-            autoComplete="user"
-            sx={{
-              '& .MuiInputLabel-root': {
-                fontSize: '1.2rem', // Adjust label font size
-                color: preferredMode ? '#CCCCCC' : '#999999',
-                '&.Mui-focused': { color: preferredMode ? '#00ffff' : '#3b82f680' },
-              },
-              '& .MuiOutlinedInput-root.Mui-focused .MuiOutlinedInput-notchedOutline': {
-                borderColor: preferredMode ? '#00ffff' : '#3b82f6',
-              },
-              '& .MuiOutlinedInput-root': {
-                '& fieldset': { borderColor: preferredMode ? 'primary' : '#999999' },
-                '&:hover fieldset': { borderColor: preferredMode ? '#CCCCCC' : 'black' },
-                color: preferredMode ? 'white' : 'black',
-                fontSize: '1.2rem', // Adjust input font size
-              },
-              '&:hover .MuiInputLabel-root:not(.Mui-focused)': {
-                color: preferredMode ? 'white' : 'black',
-              },
-            }}
-          />
-          <TextField
-            margin="normal"
-            required
-            fullWidth
-            onChange={(e)=> setPsw(e.target.value)}
-            type="password"
-            id="psw"
-            label="Password"
-            name="psw"
-            autoComplete="off"
-            sx={{
-              '& .MuiInputLabel-root': {
-                fontSize: '1.2rem', // Adjust label font size
-                color: preferredMode ? '#CCCCCC' : '#999999',
-                '&.Mui-focused': { color: preferredMode ? '#00ffff' : '#3b82f680' },
-              },
-              '& .MuiOutlinedInput-root.Mui-focused .MuiOutlinedInput-notchedOutline': {
-                borderColor: preferredMode ? '#00ffff' : '#3b82f6',
-              },
-              '& .MuiOutlinedInput-root': {
-                '& fieldset': { borderColor: preferredMode ? 'primary' : '#999999' },
-                '&:hover fieldset': { borderColor: preferredMode ? '#CCCCCC' : 'black' },
-                color: preferredMode ? 'white' : 'black',
-                fontSize: '1.2rem', // Adjust input font size
-              },
-              '&:hover .MuiInputLabel-root:not(.Mui-focused)': {
-                color: preferredMode ? 'white' : 'black',
-              },
-            }}
-          />
-          {/*<FormControlLabel
-            sx={{
-              color: preferredMode ? 'white' : 'black',
-              '& .MuiCheckbox-root': { color: preferredMode ? 'white' : 'black' },
-              '& .MuiCheckbox-colorPrimary.Mui-checked': { color: preferredMode ? '#00ffff' : '#1976d2' },
-            }}
-            control={<Checkbox value="remember" color="primary" />}
-            label="Remember me"
-          />*/}
-          <Button
-          disabled={!name || !psw}
-          type="submit"
-          fullWidth
-          variant="contained"
+        fullWidth
+        variant="outlined"
+        label="User name"
+        type="text"
+        color="secondary"
+        autoComplete="off"
+        onBlur={handleBlur}
+        onChange={handleChange}
+        value={values.name}
+        name="name"
+        error={!!touched.name && !!errors.name}
+        helperText={touched.name && errors.name}
+        sx={{margin: "1rem 0"}}
+        />
+        <TextField
+        fullWidth
+        variant="outlined"
+        label="Password"
+        type="password"
+        color="secondary"
+        autoComplete="off"
+        onBlur={handleBlur}
+        onChange={handleChange}
+        value={values.psw}
+        name="psw"
+        error={!!touched.psw && !!errors.psw}
+        helperText={touched.psw && errors.psw}
+        />
+        {/*<FormControlLabel
           sx={{
-            mt: 3,
-            mb: 2,
-            bgcolor: preferredMode ? '#6ff9ff' : '#1976d2',
-            color: preferredMode ? 'black' : 'white',
-            fontSize: '1.2rem',
-            textTransform: 'none', // Set text to normal case
-            '&:hover': {
-              bgcolor: preferredMode ? 'secondary.main' : '#0f4a8e',
-            },
-            }}
-          >
-            Sign In
-          </Button>
-        </Box>
-      </Box>
-    </Box>
+            color: preferredMode ? 'white' : 'black',
+            '& .MuiCheckbox-root': { color: preferredMode ? 'white' : 'black' },
+            '& .MuiCheckbox-colorPrimary.Mui-checked': { color: preferredMode ? '#00ffff' : '#1976d2' },
+          }}
+          control={<Checkbox value="remember" color="primary" />}
+          label="Remember me"
+        />*/}
+        <Button
+        type="submit"
+        fullWidth
+        variant="contained"
+        sx={{
+          mt: 3,
+          mb: 2,
+          bgcolor: preferredMode ? '#6ff9ff' : '#1976d2',
+          color: preferredMode ? 'black' : 'white',
+          fontSize: '1.2rem',
+          textTransform: 'none', // Set text to normal case
+          '&:hover': {
+            bgcolor: preferredMode ? 'secondary.main' : '#0f4a8e',
+          },
+          }}
+          disabled={isButtonDisabled}
+        >
+          Sign In
+        </Button>
+      </Form>
+      )}
+    </Formik>
+  </Box>
+  {showToast && <ToastContainer/>}
+</Box>
   );
 };
+  
 
 export default Login;

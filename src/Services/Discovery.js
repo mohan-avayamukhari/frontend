@@ -4,12 +4,58 @@ const baseURL = 'http://localhost:5001/cluster'
 
 const getAllClusters = async () => {
   try {
-    const response = await axios.get(`${baseURL}/get-all`);
+    const response = await axios.get(`${baseURL}/get-all`, {withCredentials: true});
     return response.data;
   } catch (error) {
-    console.log();
+    console.log(error);
     throw error;
   }
 }
 
-export {getAllClusters}
+const addCluster = async(values) => {
+  try{
+    const response = await axios.post(`${baseURL}/add-cluster`,
+    {
+      clusterName: values.clusterName,
+      fqdnIp: values.fqdnIp,
+      port: values.port,
+      token: values.token
+    },
+    {withCredentials: true}
+    );
+    return response.status;
+  }catch(error){
+    console.error(error);
+    throw error
+  }
+}
+
+const updateCluster = async (id, values) => {
+  try{
+    const response = await axios.put(`${baseURL}/${id}`, 
+    {
+      clusterName: values.clusterName,
+      fqdnIp: values.fqdnIp,
+      port: values.port,
+      token: values.token
+    },
+    {withCredentials:true}
+    );
+    return response.status;
+  }catch(error){
+    console.error(error)
+  }
+}
+
+const deleteCluster = async (id) => {
+  try {
+    const response = await axios.delete(`${baseURL}/${id}`, {withCredentials: true});
+    return response.status;
+  } catch (error) {
+    console.error(error);
+    return error.response ? error.response.status : -1;
+  }
+};
+
+
+export {getAllClusters,updateCluster, addCluster, deleteCluster}
