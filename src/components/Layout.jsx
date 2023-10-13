@@ -12,7 +12,7 @@ const Layout = ({ children, isCollapsed, setIsCollapsed, }) => {
   const [state, setState] = useState('Active');
   const [remaining, setRemaining] = useState(timeout);
   const [open, setOpen] = useState(false);
-  const navigate = useNavigate;
+  const navigate = useNavigate();
 
   const onIdle = () => {
     setState('Idle');
@@ -22,7 +22,6 @@ const Layout = ({ children, isCollapsed, setIsCollapsed, }) => {
 
   useEffect(() => {
     if (state === 'Idle') {
-
       navigate("/login")
     }
   }, [navigate, state]);

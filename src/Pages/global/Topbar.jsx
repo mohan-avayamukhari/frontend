@@ -43,7 +43,7 @@ const SettingsMenu = () => {
       navigate('/login')
       await removeToken()
     }catch (error) {
-      console.error(error);
+      navigate('/login')
   }
 }
 

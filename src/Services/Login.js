@@ -14,13 +14,14 @@ const login = async (values) => {
 
 const removeToken = async () => {
   try {
-    const response = await axios.post(`${baseURL}/logout`,{}, {withCredentials:true});
+    const response = await axios.post(`${baseURL}/logout`, {}, {withCredentials:true});
     return response.status;
   } catch (error) {
-    console.log();
+    console.error("Error during logout:", error);
     throw error;
   }
-}
+};
+
 
 const changePsw = async(values) =>{
   try {

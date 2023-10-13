@@ -7,11 +7,12 @@ import Avatar from '@mui/material/Avatar';
 import LockOutlinedIcon from '@mui/icons-material/LockOutlined';
 import { Form, Formik } from "formik";
 import * as yup from "yup";
-import {login} from "../Services/Login.js";
+import {login, verifyLoginState} from "../Services/Login.js";
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 
-const Login = () => {
+
+const Login = ({setIsAuthenticated}) => {
   const preferredMode = useMediaQuery('(prefers-color-scheme: dark)');
   const navigate = useNavigate();
   const [isButtonDisabled, setButtonDisabled] = useState(false);
@@ -48,8 +49,17 @@ const Login = () => {
 const handleFormSubmit = async (values) => {
   try {
     setButtonDisabled(true);
-    await login(values).then(() =>{
-    navigate('/dashboard');
+    await login(values).then((statusCode) =>{
+      if(statusCode === 200){
+        verifyLoginState().then((statusCode) => {
+          if(statusCode === 200){
+            setIsAuthenticated(true)
+            navigate('/dashboard');
+          }
+        }).catch(function (error){
+          setIsAuthenticated(false);
+        });
+      }
   }) 
   }catch (error) {
     let errorMessage = "An error occurred";
