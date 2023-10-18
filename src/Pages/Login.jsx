@@ -1,7 +1,6 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { Box, Button, TextField } from "@mui/material";
-import useMediaQuery from "@mui/material/useMediaQuery";
 import Typography from '@mui/material/Typography';
 import Avatar from '@mui/material/Avatar';
 import LockOutlinedIcon from '@mui/icons-material/LockOutlined';
@@ -10,10 +9,12 @@ import * as yup from "yup";
 import {login, verifyLoginState} from "../Services/Login.js";
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
+import { ThemeProvider, createTheme } from '@mui/material/styles';
+import CssBaseline from '@mui/material/CssBaseline';
 
 
-const Login = ({setIsAuthenticated}) => {
-  const preferredMode = useMediaQuery('(prefers-color-scheme: dark)');
+
+const Login = ({setIsAuthenticated, preferredMode, theme}) => {
   const navigate = useNavigate();
   const [isButtonDisabled, setButtonDisabled] = useState(false);
   const [error, setError] = useState("")
@@ -78,6 +79,8 @@ const handleFormSubmit = async (values) => {
   
 
   return (
+    <ThemeProvider theme={theme}>
+      <CssBaseline />
     <Box p="10% 38%" width="100%" height="100%" sx={{ backgroundColor: preferredMode ? 'primary' : 'white' }}>
       <Box
         sx={{
@@ -109,7 +112,7 @@ const handleFormSubmit = async (values) => {
         variant="outlined"
         label="User name"
         type="text"
-        color="secondary"
+        color={preferredMode? "secondary":"primary"}
         autoComplete="off"
         onBlur={handleBlur}
         onChange={handleChange}
@@ -124,7 +127,7 @@ const handleFormSubmit = async (values) => {
         variant="outlined"
         label="Password"
         type="password"
-        color="secondary"
+        color={preferredMode? "secondary":"primary"}
         autoComplete="off"
         onBlur={handleBlur}
         onChange={handleChange}
@@ -152,9 +155,9 @@ const handleFormSubmit = async (values) => {
           bgcolor: preferredMode ? '#6ff9ff' : '#1976d2',
           color: preferredMode ? 'black' : 'white',
           fontSize: '1.2rem',
-          textTransform: 'none', // Set text to normal case
+          textTransform: 'none',
           '&:hover': {
-            bgcolor: preferredMode ? 'secondary.main' : '#0f4a8e',
+            bgcolor: preferredMode ? '#6ff9ff' : '#0f4a8e',
           },
           }}
           disabled={isButtonDisabled}
@@ -167,6 +170,7 @@ const handleFormSubmit = async (values) => {
   </Box>
   {showToast && <ToastContainer/>}
 </Box>
+</ThemeProvider>
   );
 };
   

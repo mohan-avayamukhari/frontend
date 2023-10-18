@@ -1,19 +1,15 @@
 /* eslint-disable react/jsx-key */
 import { DataGrid} from "@mui/x-data-grid";
-import { CardContent, Container, Grid, useTheme, IconButton, Button, Dialog, DialogTitle, DialogActions } from "@mui/material";
+import { CardContent, Container, Grid, IconButton, Button, Dialog, DialogTitle, DialogActions, useMediaQuery, createTheme, ThemeProvider, CssBaseline, Typography } from "@mui/material";
 import Form from "./AddClusterForm";
 import { Box } from "@mui/system";
-import {tokens} from "../../../Themes/themes.js"
 import { useState, useEffect } from "react";
 import { deleteCluster, getAllClusters } from "../../Services/discovery";
-import {DeleteOutlined, EditOutlined, PlayArrowOutlined, AddOutlined} from '@mui/icons-material';
+import {DeleteOutlined, EditOutlined, AddOutlined} from '@mui/icons-material';
+import TestButton from "../../components/TestButton";
+import Toast from "../../components/Toast";
 
-
-
-
-const Discovery = ({isCollapsed}) => {
-  const theme = useTheme();
-  const colors = tokens(theme.palette.mode);
+const Discovery = ({theme, preferredMode, open}) => {
   const [rows, setRows] = useState([])
   const [isEditing, setIsEditing] = useState(false);
   const [isFormVisible, setIsFormVisible] = useState(false);
@@ -21,6 +17,9 @@ const Discovery = ({isCollapsed}) => {
   const [deleteDetails, setDeleteDetails] = useState({})
   const [editId, setEditId] = useState("")
   const [values, setValues] = useState({})
+  const [isTostVisible, setIsTostVisible] = useState(false)
+  const [message, setMessage] = useState("")
+  const [severity, setSeverity] = useState("success")
 
   useEffect(() => {
     getAllClusters().then(data => {
@@ -59,6 +58,7 @@ const Discovery = ({isCollapsed}) => {
       {
         field: "action",
         headerName: "Action",
+        width: 180,
         sortable: false,
         renderCell: (params) => {
           return (
@@ -74,9 +74,9 @@ const Discovery = ({isCollapsed}) => {
         headerName: "Test",
         sortable: false,
         renderCell: (params) => {
-          return <IconButton onClick={() => handleTest(params)}><PlayArrowOutlined sx={{color:"lightgreen"}}/></IconButton>;
+          return <TestButton setMessage={setMessage} setSeverity={setSeverity} setIsTostVisible={setIsTostVisible} id={params.id} severity={params.row.severity} theme={theme} preferredMode={preferredMode}/>;
         },
-      },     
+      },
     ];
     
     const handleEdit = (params) => {
@@ -100,49 +100,47 @@ const Discovery = ({isCollapsed}) => {
       setIsConfirmDelete(true)
     }
 
-    const handleTest = (params) => {
-      console.log(params);
-    }
-
   return (
-    <div>
-      <Box padding="0 1rem">
-      <IconButton onClick={()=> setIsFormVisible(!isFormVisible)} color="secondary" variant="contained" >
-        <AddOutlined fontSize="large"/>
-      </IconButton>
-      <Form rows={rows} setRows={setRows} isFormVisible={isFormVisible} setIsFormVisible={setIsFormVisible} clusterName="" fqdnIp="" port="" token="" action={"Add"} message={"New cluster added"}/>
-      <ConfirmDelete setRows={setRows} deleteDetails={deleteDetails} setIsConfirmDelete={setIsConfirmDelete} isConfirmDelete={isConfirmDelete}/>
-      {isEditing && (<Form rows={rows} setRows={setRows} isFormVisible={isEditing} setIsFormVisible={setIsEditing} editId={editId} clusterName={values.clusterName} fqdnIp={values.fqdnIp} port={values.port} token={values.token} action={"Save"} message={"Updated the cluster details"}/>)}
+    <ThemeProvider theme={theme}>
+      <CssBaseline />
+      <Box sx={{margin:open? "4rem 0 0 15rem": "4rem 0 0 4rem",
+      paddingTop: "1rem",
+      transition: "margin 0.3s ease-in-out", width: open? "89.5rem":"100rem"
+      }}>
+      <Box paddingBottom="0.5rem">
+      <IconButton onClick={()=> setIsFormVisible(!isFormVisible)} variant="contained" sx={{color:preferredMode? "#18FFFF":"#03a9f4",marginLeft:"1.5rem", borderRadius:"0"}}>
+        <AddOutlined fontSize="medium"/>
+        <Typography>Add</Typography>
+      </IconButton >
+      <Form setRows={setRows} isFormVisible={isFormVisible} setIsFormVisible={setIsFormVisible} clusterName="" fqdnIp="" port="" action={"Add"} setMessage={setMessage} setSeverity={setSeverity} setIsToastVisible={setIsTostVisible} preferredMode={preferredMode} theme={theme}/>
       </Box>
-      <Container sx={{margin: "0", padding: "0 !important"}}>
-        <CardContent>
+      <Box sx={{width: open? "89.5rem":"100rem", transition: "width 0.3s ease-in-out",}}>
+      <Container sx={{ margin: "0", "@media (min-width: 1200px)": { maxWidth: "100%" } }}>
+        <CardContent sx={{padding:"1rem 0 0 1rem"}}>
           <Grid container direction="column" spacing={2}>
-            <Grid item sx={{width: isCollapsed ? "98.5rem" : "86.5rem" , transition: "width: 0.5s",
+            <Grid sx={{ width:"100%", transition: "width 0.3s ease-in-out",
              "& .MuiDataGrid-root": {
+              padding: "0",
               border: "none",
             },
             "& .MuiDataGrid-cell": {
               borderBottom: "none",
             },
-            "& .name-column--cell": {
-              color: colors.greenAccent[300],
-            },
             "& .MuiDataGrid-columnHeaders": {
-              backgroundColor: colors.blueAccent[700],
+              backgroundColor: preferredMode? "#272727":"#03a9f4",
               borderBottom: "none",
             },
             "& .MuiDataGrid-virtualScroller": {
-              backgroundColor: colors.primary[400],
+              backgroundColor: preferredMode? "#424242":"#f5f5f5",
             },
             "& .MuiDataGrid-footerContainer": {
               borderTop: "none",
-              backgroundColor: colors.blueAccent[700],
             },
             "& .MuiCheckbox-root": {
-              color: `${colors.greenAccent[200]} !important`,
+              color: 'red !important',
             },
             "& .MuiDataGrid-toolbarContainer .MuiButton-text": {
-              color: `${colors.grey[100]} !important`,
+              color: 'red !important',
             },
           }}>
               <DataGrid
@@ -156,7 +154,12 @@ const Discovery = ({isCollapsed}) => {
           </Grid>
         </CardContent>
     </Container>
-    </div>
+    </Box>
+    </Box>
+    {isEditing && (<Form setRows={setRows} isFormVisible={isEditing} setIsFormVisible={setIsEditing} clusterName={values.clusterName} fqdnIp={values.fqdnIp} port={values.port} action={"Save"} setMessage={setMessage} setSeverity={setSeverity} setIsToastVisible={setIsTostVisible} preferredMode={preferredMode} theme={theme} editId={editId}/>)}
+    <ConfirmDelete setRows={setRows} deleteDetails={deleteDetails} setIsConfirmDelete={setIsConfirmDelete} isConfirmDelete={isConfirmDelete}/>
+    <Toast message={message} severity={severity} isToastVisible={isTostVisible} setIsToastVisible={setIsTostVisible}/>
+    </ThemeProvider>
   );
 }
 

@@ -1,9 +1,9 @@
 import { Navigate } from "react-router-dom";
 import Layout from "./Layout";
 
-const PrivateRoute = ({ children, isCollapsed, setIsCollapsed, isAuthenticated}) => {
+const PrivateRoute = ({ children, preferredMode, isAuthenticated, setIsAuthenticated, setOpen, open, theme}) => {
   return isAuthenticated ? (
-    <Layout isCollapsed={isCollapsed} setIsCollapsed={setIsCollapsed}>
+    <Layout setIsAuthenticated={setIsAuthenticated} preferredMode={preferredMode} setSidebarOpen={setOpen} sidebarOpen={open} theme={theme}>
       {children}
     </Layout>
   ) : (

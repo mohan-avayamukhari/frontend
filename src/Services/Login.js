@@ -35,13 +35,8 @@ const changePsw = async(values) =>{
 
 
 const verifyLoginState = async() => {
-  try{
     const response = await axios.post(`${baseURL}/check-auth-status`,{}, { withCredentials: true })
     return response.status;
-  }catch (error){
-    console.log(error);
-    throw error;
-  }
 }
 
 

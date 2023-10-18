@@ -30,6 +30,15 @@ const addCluster = async(values) => {
   }
 }
 
+const updateSeverity = async (id, severity) => {
+  try{
+    const response = await axios.patch(`${baseURL}/${id}`, {severity:severity}, {withCredentials:true})
+    return response
+  }catch(error){
+    console.error(error)
+  }
+}
+
 const updateCluster = async (id, values) => {
   try{
     const response = await axios.put(`${baseURL}/${id}`, 
@@ -58,4 +67,4 @@ const deleteCluster = async (id) => {
 };
 
 
-export {getAllClusters,updateCluster, addCluster, deleteCluster}
+export {getAllClusters,updateCluster, updateSeverity, addCluster, deleteCluster}

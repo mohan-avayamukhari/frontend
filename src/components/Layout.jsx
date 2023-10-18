@@ -1,12 +1,11 @@
 import { Box, Dialog, DialogContent, DialogTitle, Typography, Button } from "@mui/material";
 import { useNavigate } from "react-router-dom";
 import { useIdleTimer } from "react-idle-timer";
-import Sidebar from "../Pages/global/sidebar";
-import Topbar from "../Pages/global/Topbar";
+import Navbar from "../Pages/global/Navbar";
 import { useState, useEffect } from "react";
 import { removeToken } from "../Services/Login";
 
-const Layout = ({ children, isCollapsed, setIsCollapsed, }) => {
+const Layout = ({ children, setIsAuthenticated, preferredMode, sidebarOpen, setSidebarOpen, theme}) => {
   const timeout = parseInt(import.meta.env.VITE_REACT_APP_TIME_OUT, 10) * 60 * 1000;
   const promptBeforeIdle = 30000
   const [state, setState] = useState('Active');
@@ -14,10 +13,11 @@ const Layout = ({ children, isCollapsed, setIsCollapsed, }) => {
   const [open, setOpen] = useState(false);
   const navigate = useNavigate();
 
-  const onIdle = () => {
+  const onIdle = async() => {
+    await removeToken()
+    setIsAuthenticated(false)
     setState('Idle');
     setOpen(false);
-    removeToken()
   };
 
   useEffect(() => {
@@ -72,11 +72,11 @@ const Layout = ({ children, isCollapsed, setIsCollapsed, }) => {
 
   const seconds = promptBeforeIdle > 1 ? 'seconds' : 'second';
   return (
-  <div className="app">
-    <Sidebar isCollapsed={isCollapsed} setIsCollapsed={setIsCollapsed} />
+  <Box className="app">
     <Box display="flex" flexDirection="column">
-      <Topbar isCollapsed={isCollapsed}/>
-      <main className="content">{children}</main>
+      <Navbar open={sidebarOpen} setOpen={setSidebarOpen} preferredMode={preferredMode} setIsAuthenticated={setIsAuthenticated} theme={theme}></Navbar>
+      {children}
+      </Box>
       <Dialog open={open} sx={{margin: "0"}}>
         <DialogTitle component="div">
           <Typography color="secondary" variant="h5" fontSize="1.4rem" textAlign="center" padding="5px">
@@ -95,7 +95,6 @@ const Layout = ({ children, isCollapsed, setIsCollapsed, }) => {
         </DialogContent>
       </Dialog>
     </Box>
-  </div>
   );
 };
 

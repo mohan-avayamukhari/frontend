@@ -1,29 +1,28 @@
-import { Box, InputLabel, Button, Dialog, DialogContent, DialogTitle, TextField, Typography, Snackbar, Alert } from "@mui/material";
+import { Box, InputLabel, Button, Dialog, DialogContent, DialogTitle, TextField, Typography, ThemeProvider, CssBaseline } from "@mui/material";
 import useMediaQuery from "@mui/material/useMediaQuery";
-import { useState, useMemo } from "react";
+import { useMemo } from "react";
 import { Formik } from "formik";
 import * as yup from "yup"
 import { addCluster, updateCluster, getAllClusters } from "../../Services/discovery";
 
-const Form = ({setRows, editId, clusterName, fqdnIp, port, token, isFormVisible, setIsFormVisible, action, message}) => {
-  const [isClusterAdded, setIsClusterAdded] = useState(false);
+const Form = ({setRows, editId, clusterName, fqdnIp, port, setMessage, setSeverity, setIsToastVisible, isFormVisible, setIsFormVisible, action, preferredMode, theme }) => {
   const initialValues = {
     clusterName: clusterName,
     fqdnIp: fqdnIp,
     port: port,
-    token: token,
+    token: "",
   };
 
   const isNonMobile = useMediaQuery("(min-width:600px)");
   const nameRegex = useMemo(() => /^[a-zA-Z0-9]+$/, []); 
-  const fqdnIpRegex = useMemo(() => /^(?:(?:https?|ftp):\/\/[^\s/$.?#].[^\s]*)|(?:[a-zA-Z0-9-]+\.[a-zA-Z]{2,}(?:\.[a-zA-Z]{2,})*|\b(?:\d{1,3}\.){3}\d{1,3}\b)$/, []);
+  const fqdnIpRegex = useMemo(() => /\b(?:https?|ftp):\/\/[-\w]+(?:\.\w+)*(?::\d+)?(?:\/[^\/]*)*\b|\b(?:\d{1,3}\.){3}\d{1,3}\b/, []);
   const portRegex = useMemo(() => /^([1-9]\d{0,4}|[1-5]\d{4}|6[0-4]\d{3}|65[0-4]\d{2}|655[0-2]\d|6553[0-5])$/, [])
 
   const checkoutSchema = yup.object().shape({
     clusterName: yup.string().matches(nameRegex, "Not a valid cluster name").required("required"),
     fqdnIp: yup.string().matches(fqdnIpRegex, "Not a valid FQDN or an IP address").required("required"),
-    port: yup.string().matches(portRegex, "Phone number is not valid"),
-    token: yup.string().required("required"),
+    port: yup.string().matches(portRegex, "Not a valid Port"),
+    token: action === "Add"? yup.string().required("required"): yup.string(),
   });
 
 const handleFormSubmit = (values) => {
@@ -31,7 +30,9 @@ const handleFormSubmit = (values) => {
   setIsFormVisible(false)
   addCluster(values).then(statusCode => {
     if(statusCode === 201){
-      setIsClusterAdded(true)
+      setMessage(`Added ${values.clusterName} cluster successfully`)
+      setSeverity("success")
+      setIsToastVisible(true)
       getAllClusters().then(data => {
         const rowsWithId = data.map((row, index) => ({ ...row, no: index + 1 }));
         setRows(rowsWithId);
@@ -47,7 +48,6 @@ const handleEditSubmit = (values) => {
   setIsFormVisible(false)
   updateCluster(editId, values).then(statusCode => {
     if(statusCode === 200){
-      setIsClusterAdded(true)
       getAllClusters().then(data => {
         const rowsWithId = data.map((row, index) => ({ ...row, no: index + 1 }));
         setRows(rowsWithId);
@@ -58,22 +58,19 @@ const handleEditSubmit = (values) => {
   })
 }
 
-const handleClose = (event, reason) => {
-  if (reason === 'clickaway') {
-    return;
-  }
-  setIsClusterAdded(false);
-};
+
 
   return (
+    <ThemeProvider theme={theme}>
+      <CssBaseline/>
     <div>
       <Dialog open={isFormVisible} onClose={()=> setIsFormVisible(!isFormVisible)} sx={{
-        "& .MuiDialogContent-root": {width: "24rem"},
+        "& .MuiDialogContent-root": {width: "28rem"},
         bottom: '33%'
       }}>
         <DialogTitle component="div">
-          <Typography color="secondary" variant="h5" fontSize="1.4rem" textAlign="center" padding="5px">
-            Add Cluster
+          <Typography variant="h5" fontSize="1.4rem" textAlign="center" padding="5px"sx={{color: preferredMode? "#18ffff":"#03a9f4"}}>
+            {action === "Add"? "Add Cluster":"Edit Cluster"}
           </Typography>
         </DialogTitle>
         <DialogContent>
@@ -106,8 +103,8 @@ const handleClose = (event, reason) => {
                     fullWidth
                     variant="outlined"
                     type="text"
-                    color="secondary"
                     autoComplete="off"
+                    color={preferredMode? "secondary":"primary"}
                     onBlur={handleBlur}
                     onChange={handleChange}
                     value={values.clusterName}
@@ -124,7 +121,7 @@ const handleClose = (event, reason) => {
                     fullWidth
                     variant="outlined"
                     type="text"
-                    color="secondary"
+                    color={preferredMode? "secondary":"primary"}
                     autoComplete="off"
                     onBlur={handleBlur}
                     onChange={handleChange}
@@ -142,7 +139,7 @@ const handleClose = (event, reason) => {
                     <TextField
                     fullWidth
                     variant="outlined"
-                    color="secondary"
+                    color={preferredMode? "secondary":"primary"}
                     type="text"
                     autoComplete="off"
                     onBlur={handleBlur}
@@ -163,11 +160,12 @@ const handleClose = (event, reason) => {
                     <TextField
                     fullWidth
                     variant="outlined"
-                    color="secondary"
+                    color={preferredMode? "secondary":"primary"}
                     type="password"
                     onBlur={handleBlur}
                     onChange={handleChange}
                     value={values.token}
+                    placeholder={action === "Save"? "Leave empty if not change":""}
                     name="token"
                     error={!!touched.token && !!errors.token}
                     helperText={touched.token && errors.token}
@@ -176,10 +174,10 @@ const handleClose = (event, reason) => {
                 </Box>
             </Box>
             <Box display="flex" mt="20px" justifyContent="space-between">
-            <Button type="button" onClick={() => setIsFormVisible(false)} color="secondary" variant="contained">
+            <Button type="button" color={preferredMode? "secondary":"primary"} onClick={() => setIsFormVisible(false)} variant="contained" sx={{color: preferredMode? "black":"white"}}>
                 Cancel
             </Button>
-            <Button type="submit" color="secondary" variant="contained">
+            <Button type="submit" color={preferredMode? "secondary":"primary"} variant="contained" sx={{backgroundColor: preferredMode? "#18ffff":"#03a9f4", color: preferredMode? "black":"white"}}>
               {action}
             </Button>
             </Box>
@@ -188,12 +186,8 @@ const handleClose = (event, reason) => {
         </Formik>
         </DialogContent>
       </Dialog>
-      <Snackbar open={isClusterAdded} autoHideDuration={5000} onClose={handleClose} anchorOrigin={{vertical: 'bottom', horizontal:"right"}}>
-        <Alert onClose={handleClose} severity="success" sx={{ width: '100%' }} >
-          {message}
-        </Alert>
-      </Snackbar>
     </div>
+    </ThemeProvider>
   );
 };
 
