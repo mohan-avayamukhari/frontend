@@ -19,7 +19,7 @@ const addCluster = async(values) => {
       clusterName: values.clusterName,
       fqdnIp: values.fqdnIp,
       port: values.port,
-      token: values.token
+      serviceToken: values.serviceToken
     },
     {withCredentials: true}
     );
@@ -32,7 +32,16 @@ const addCluster = async(values) => {
 
 const updateSeverity = async (id, severity) => {
   try{
-    const response = await axios.patch(`${baseURL}/${id}`, {severity:severity}, {withCredentials:true})
+    const response = await axios.patch(`${baseURL}/severity/${id}`, {severity:severity}, {withCredentials:true})
+    return response
+  }catch(error){
+    console.error(error)
+  }
+}
+
+const updateToken = async (id, token) => {
+  try{
+    const response = await axios.patch(`${baseURL}/token/${id}`, {serviceToken:token}, {withCredentials:true})
     return response
   }catch(error){
     console.error(error)
@@ -46,7 +55,6 @@ const updateCluster = async (id, values) => {
       clusterName: values.clusterName,
       fqdnIp: values.fqdnIp,
       port: values.port,
-      token: values.token
     },
     {withCredentials:true}
     );
@@ -67,4 +75,4 @@ const deleteCluster = async (id) => {
 };
 
 
-export {getAllClusters,updateCluster, updateSeverity, addCluster, deleteCluster}
+export {getAllClusters,updateCluster, updateToken, updateSeverity, addCluster, deleteCluster}

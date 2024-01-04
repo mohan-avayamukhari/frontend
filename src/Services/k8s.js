@@ -7,4 +7,10 @@ const Version = async (id, signal) => {
   return response;
 }
 
-export {Version}
+const Namespaces = async (id) => {
+  const response = await axios.get(`${baseURL}/getNamespaces/${id}`, { withCredentials: true });
+  return response;
+}
+
+
+export {Version, Namespaces}

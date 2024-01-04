@@ -1,11 +1,12 @@
 import {useState, useEffect} from 'react';
 import Box from '@mui/material/Box';
 import CircularProgress from '@mui/material/CircularProgress';
-import { green, red, orange } from '@mui/material/colors';
+import { green, red, orange, grey } from '@mui/material/colors';
 import Fab from '@mui/material/Fab';
 import {PlayArrowOutlined, Check, VpnKeyOffOutlined, CloudOffOutlined, ClearOutlined} from "@mui/icons-material"
-import { Version } from '../Services/k8s';
-import { updateSeverity } from '../Services/discovery';
+import { Version } from '../../../Services/k8s';
+import { updateSeverity } from '../../../Services/discovery';
+import { colors } from '@mui/material';
 
 const TestButton = ({theme, preferredMode, id, setIsTostVisible, setMessage, setSeverity, severity}) => {
   const [loading, setLoading] = useState(false);
@@ -34,29 +35,6 @@ const TestButton = ({theme, preferredMode, id, setIsTostVisible, setMessage, set
         break;
     }
   }, [severity]);
-
-  const buttonSx = {
-    ...(success && {
-      bgcolor: green[500],
-      '&:hover': {
-        bgcolor: green[700],
-      },
-    }),
-    ...(warning && {
-      bgcolor: orange[500],
-      '&:hover': {
-        bgcolor: orange[700],
-      },
-    }),
-    ...(failure && {
-      bgcolor: red[500],
-      '&:hover': {
-        bgcolor: red[700],
-      },
-    }),
-    width:"35px",
-    height:"35px"
-  };
 
 
   const handleButtonClick = async () => {
@@ -112,13 +90,47 @@ const TestButton = ({theme, preferredMode, id, setIsTostVisible, setMessage, set
   };
 
   return (
-      <Box sx={{ m: 1, position: 'relative' }}>
-        <Fab aria-label="save" color='warning' sx={buttonSx} onClick={handleButtonClick} >
+      <Box sx={{ m: 1, position:'relative' }}>
+        <Fab aria-label="save" sx={{
+          ...(success && {
+            bgcolor: green[500],
+            '&:hover': {
+              bgcolor: green[700],
+            },
+          }),
+          ...(warning && {
+            bgcolor: orange[500],
+            '&:hover': {
+              bgcolor: orange[700],
+            },
+          }),
+          ...(failure && {
+            bgcolor: red[500],
+            '&:hover': {
+              bgcolor: red[700],
+            },
+          }),
+          ...(loading &&{
+            bgcolor: "black",
+            '&:hover': {
+              bgcolor: "black",
+            },
+          }),
+          ...(!loading && !success && !warning && !failure &&{
+          bgcolor: grey[900],
+          '&:hover': {
+            bgcolor: grey[800],
+          },
+        }),
+        width:"35px",
+        height:"35px"
+        }}
+         onClick={handleButtonClick} >
           {failure ? (<VpnKeyOffOutlined sx={{ fontSize: "1.5rem"}} />) : (<>
           {success ? (<Check sx={{ fontSize: "1.5rem"}} />) : (<>
           {warning ? (<CloudOffOutlined sx={{ fontSize: "1.5rem"}} />) : (<>
-          {loading ? (<ClearOutlined sx={{ fontSize: "1.5rem"}} />) : (
-          <PlayArrowOutlined sx={{ fontSize: "1.5rem" }} />)}</>)}</>)}</>)}
+          {loading ? (<ClearOutlined sx={{ fontSize: "1.5rem", color:"white"}} />) : (
+          <PlayArrowOutlined sx={{ fontSize: "1.5rem", color:'white' }} />)}</>)}</>)}</>)}
         </Fab>
 
         {loading && (

@@ -1,5 +1,5 @@
 import React from 'react';
-import { styled, useTheme } from '@mui/material/styles';
+import { styled } from '@mui/material/styles';
 import Box from '@mui/material/Box';
 import MuiDrawer from '@mui/material/Drawer';
 import MuiAppBar from '@mui/material/AppBar';
@@ -11,14 +11,11 @@ import Divider from '@mui/material/Divider';
 import IconButton from '@mui/material/IconButton';
 import MenuIcon from '@mui/icons-material/Menu';
 import ChevronLeftIcon from '@mui/icons-material/ChevronLeft';
-import ChevronRightIcon from '@mui/icons-material/ChevronRight';
 import ListItem from '@mui/material/ListItem';
 import ListItemButton from '@mui/material/ListItemButton';
 import ListItemIcon from '@mui/material/ListItemIcon';
 import ListItemText from '@mui/material/ListItemText';
-import InboxIcon from '@mui/icons-material/MoveToInbox';
-import MailIcon from '@mui/icons-material/Mail';
-import { ThemeProvider, createTheme } from '@mui/material/styles';
+import { ThemeProvider } from '@mui/material/styles';
 import { useState, useMemo } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import * as yup from "yup"
@@ -28,7 +25,7 @@ import PopupState, {bindTrigger, bindMenu} from "material-ui-popup-state";
 import SettingsOutlinedIcon from "@mui/icons-material/SettingsOutlined";
 import { NotificationsOutlined } from '@mui/icons-material';
 import { changePsw, removeToken } from "../../Services/Login.js";
-import {Snackbar, Alert, Menu, MenuItem, InputLabel, TextField, Button} from "@mui/material"
+import { Menu, MenuItem, InputLabel, TextField, Button} from "@mui/material"
 import {HomeOutlined, TravelExploreOutlined, ListAltOutlined, ReportGmailerrorredOutlined, PersonAddOutlined, GroupOutlined, HelpOutlineOutlined} from "@mui/icons-material"
 
 

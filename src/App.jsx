@@ -9,7 +9,8 @@ import Dashboard from "./Pages/Dashboard.jsx";
 import {css} from  "@emotion/react"
 import Discovery from "./Pages/Discovery/Discovery.jsx"
 import {refreshToken, verifyLoginState } from "./Services/Login.js"
-import DrPolicy from "./Pages/DrPolicy.jsx";
+import DrPolicy from "./Pages/DrPolicy/DrPolicy.jsx";
+import Reports from "./Pages/Reports.jsx";
 
 
 const App = () => {
@@ -43,9 +44,6 @@ const darkModeStyles = {
       secondary: {
         main: '#18ffff',
       },
-      warning:{
-        main: '#272727'
-      }
     },
   });
 
@@ -92,8 +90,9 @@ const darkModeStyles = {
         <Routes>
           <Route path="/login" element={<Login setIsAuthenticated={setIsAuthenticated} preferredMode={preferredMode} theme={theme}/>}/>
           <Route path="/dashboard" element={<PrivateRoute isAuthenticated={isAuthenticated} preferredMode={preferredMode} setIsAuthenticated={setIsAuthenticated} setOpen={setOpen} open={open} theme={theme}><Dashboard /></PrivateRoute>}/>
-          <Route path="/discovery" element={<PrivateRoute isAuthenticated={isAuthenticated} preferredMode={preferredMode} setIsAuthenticated={setIsAuthenticated} setOpen={setOpen} open={open} theme={theme}><Discovery theme={theme} preferredMode={preferredMode} open={open}/></PrivateRoute>}/>
-          <Route path="/dr-policy" element={<PrivateRoute isAuthenticated={isAuthenticated} preferredMode={preferredMode} setIsAuthenticated={setIsAuthenticated} setOpen={setOpen} open={open} theme={theme}><DrPolicy preferredMode={preferredMode} open={open}/></PrivateRoute>}/>
+          <Route path="/discovery" element={<PrivateRoute isAuthenticated={isAuthenticated} preferredMode={preferredMode} setIsAuthenticated={setIsAuthenticated} setOpen={setOpen} open={open} theme={theme}><Discovery globalTheme={theme} preferredMode={preferredMode} open={open}/></PrivateRoute>}/>
+          <Route path="/dr-policy" element={<PrivateRoute isAuthenticated={isAuthenticated} preferredMode={preferredMode} setIsAuthenticated={setIsAuthenticated} setOpen={setOpen} open={open} theme={theme}><DrPolicy preferredMode={preferredMode} globalTheme={theme} open={open}/></PrivateRoute>}/>
+          <Route path="/reports" element={<PrivateRoute isAuthenticated={isAuthenticated} preferredMode={preferredMode} setIsAuthenticated={setIsAuthenticated} setOpen={setOpen} open={open} theme={theme}><Reports preferredMode={preferredMode} globalTheme={theme} open={open}/></PrivateRoute>}/>
           <Route path="*" element={<Navigate to="/dashboard" />} />
         </Routes>
      </ThemeProvider>
