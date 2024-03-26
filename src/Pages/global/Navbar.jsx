@@ -7,7 +7,6 @@ import Toolbar from '@mui/material/Toolbar';
 import List from '@mui/material/List';
 import CssBaseline from '@mui/material/CssBaseline';
 import Typography from '@mui/material/Typography';
-import Divider from '@mui/material/Divider';
 import IconButton from '@mui/material/IconButton';
 import MenuIcon from '@mui/icons-material/Menu';
 import ChevronLeftIcon from '@mui/icons-material/ChevronLeft';
@@ -26,7 +25,7 @@ import SettingsOutlinedIcon from "@mui/icons-material/SettingsOutlined";
 import { NotificationsOutlined } from '@mui/icons-material';
 import { changePsw, removeToken } from "../../Services/Login.js";
 import { Menu, MenuItem, InputLabel, TextField, Button} from "@mui/material"
-import {HomeOutlined, TravelExploreOutlined, ListAltOutlined, ReportGmailerrorredOutlined, PersonAddOutlined, GroupOutlined, HelpOutlineOutlined} from "@mui/icons-material"
+import {HomeOutlined, LocalLibraryOutlined, PsychologyAltOutlined, ShortTextOutlined} from "@mui/icons-material"
 
 
 const drawerWidth = 240;
@@ -253,14 +252,13 @@ const SettingsMenu = ({setIsAuthenticated, theme, preferredMode}) => {
 };
 
 const Navbar = ({preferredMode, setOpen, open, setIsAuthenticated, theme}) => {
-  const clusterManagementIcons = [HomeOutlined, TravelExploreOutlined, ListAltOutlined, ReportGmailerrorredOutlined]
-  const adminToolIcons = [PersonAddOutlined, GroupOutlined, HelpOutlineOutlined]
+  const clusterManagementIcons = [HomeOutlined, LocalLibraryOutlined, PsychologyAltOutlined, ShortTextOutlined]
   const location = useLocation();
   const pathName = location.pathname;
-  const allMenuItems = ['Dashboard', 'Discovery', 'DR Policy', 'Reports', 'All mail', 'Trash', 'Spam']
+  const allMenuItems = ['Dashboard', 'S', 'D', 'Summarize']
   const initialSelectedItem = allMenuItems.find(item => pathName.endsWith(item.toLowerCase())) || 'Dashboard';
   const [selectedItem, setSelectedItem] = useState(initialSelectedItem);
-  const clusterManagementPaths = ['/dashboard', '/discovery', '/dr-policy', '/reports'];
+  const clusterManagementPaths = ['/dashboard', '/learn', '/quiz', '/summarize'];
 
   const navigate = useNavigate();
 
@@ -326,10 +324,7 @@ const Navbar = ({preferredMode, setOpen, open, setIsAuthenticated, theme}) => {
             </Box>
         </DrawerHeader>
         <List>
-          <Typography variant='h6' align='center' display={open? "block":"none"} >
-            Cluster Management
-          </Typography>
-          {['Dashboard', 'Discovery', 'DR Policy', 'Reports'].map((text, index) => (
+          {['Dashboard', 'Learn', 'Quiz', 'Summarize'].map((text, index) => (
             <ListItem key={text} disablePadding sx={{display: 'block'}}>
               <ListItemButton style={{padding: open? "0.5rem 3rem":"0.5rem 2rem"}}
                 sx={{
@@ -374,63 +369,6 @@ const Navbar = ({preferredMode, setOpen, open, setIsAuthenticated, theme}) => {
                   }}
                 >
                   {React.createElement(clusterManagementIcons[index])}
-                </ListItemIcon>
-                <ListItemText primary={text} sx={{ opacity: open ? 1 : 0 }} />
-              </ListItemButton>
-            </ListItem>
-          ))}
-        </List>
-        <Divider sx={{display: open? "none":"block"}}/>
-        <Typography variant='h6' align='center' display={open? "block":"none"}>
-            Admin Tools
-          </Typography>
-        <List>
-          {['All mail', 'Trash', 'Spam'].map((text, index) => (
-            <ListItem key={text} disablePadding sx={{ display: 'block'}}>
-              <ListItemButton 
-                sx={{
-                  padding: open? "0.5rem 3rem":"0.5rem 2rem",
-                  minHeight: 28,
-                  justifyContent: open ? 'initial' : 'center',
-                  '& .MuiListItemIcon-root, & .MuiListItemText-root': {
-                    color: selectedItem === text ?(preferredMode? '#18ffff':'#1876D1'):(preferredMode? 'white':'black'),
-                  },
-                  '&:hover': {
-                    backgroundColor:"transparent",
-                    '& .MuiListItemIcon-root':{
-                      animationName: 'wiggle',
-                      animationDuration: '500ms',
-                      animationIterationCount: 1,
-                      animationTimingFunction: 'ease-in-out',
-                      backgroundColor: 'transparent',
-                    },
-                    '& .MuiListItemIcon-root, & .MuiListItemText-root': {
-                      color: preferredMode? '#18ffff':'#1876D1',
-                    },
-                    '@keyframes wiggle': {
-                      '0%': { transform: 'rotate(0deg)' },
-                      '25%': { transform: 'rotate(10deg)' },
-                      '50%': { transform: 'rotate(-10deg)' },
-                      '75%': { transform: 'rotate(3deg)' },
-                      '100%': { transform: 'rotate(0deg)' },
-                    },
-                  },
-                  color: selectedItem === text ? '#18ffff' : '#1876D1'
-                }}
-                onClick={() => {
-                  navigate(clusterManagementPaths[index]);    
-                  setSelectedItem(text)
-                }}
-              >
-                <ListItemIcon
-                  sx={{
-                    minWidth: 0,
-                    mr: open ? 3 : 'auto',
-                    justifyContent: 'center',
-                    color: selectedItem === text ? '#18ffff' : 'white'
-                  }}
-                >
-                  {React.createElement(adminToolIcons[index])}
                 </ListItemIcon>
                 <ListItemText primary={text} sx={{ opacity: open ? 1 : 0 }} />
               </ListItemButton>

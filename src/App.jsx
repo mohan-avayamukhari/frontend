@@ -7,10 +7,13 @@ import PrivateRoute from "./components/PrivateRouter.jsx";
 import Login from "./Pages/Login.jsx";
 import Dashboard from "./Pages/Dashboard.jsx";
 import {css} from  "@emotion/react"
-import Discovery from "./Pages/Discovery/Discovery.jsx"
+import Discovery from "./Pages/Quiz.jsx"
 import {refreshToken, verifyLoginState } from "./Services/Login.js"
-import DrPolicy from "./Pages/DrPolicy/DrPolicy.jsx";
-import Reports from "./Pages/Reports.jsx";
+import DrPolicy from "./Pages/Learn.jsx";
+import Reports from "./Pages/Summarize.jsx";
+import Quiz from "./Pages/Quiz.jsx";
+import Learn from "./Pages/Learn.jsx";
+import Summarize from "./Pages/Summarize.jsx";
 
 
 const App = () => {
@@ -90,9 +93,9 @@ const darkModeStyles = {
         <Routes>
           <Route path="/login" element={<Login setIsAuthenticated={setIsAuthenticated} preferredMode={preferredMode} theme={theme}/>}/>
           <Route path="/dashboard" element={<PrivateRoute isAuthenticated={isAuthenticated} preferredMode={preferredMode} setIsAuthenticated={setIsAuthenticated} setOpen={setOpen} open={open} theme={theme}><Dashboard /></PrivateRoute>}/>
-          <Route path="/discovery" element={<PrivateRoute isAuthenticated={isAuthenticated} preferredMode={preferredMode} setIsAuthenticated={setIsAuthenticated} setOpen={setOpen} open={open} theme={theme}><Discovery globalTheme={theme} preferredMode={preferredMode} open={open}/></PrivateRoute>}/>
-          <Route path="/dr-policy" element={<PrivateRoute isAuthenticated={isAuthenticated} preferredMode={preferredMode} setIsAuthenticated={setIsAuthenticated} setOpen={setOpen} open={open} theme={theme}><DrPolicy preferredMode={preferredMode} globalTheme={theme} open={open}/></PrivateRoute>}/>
-          <Route path="/reports" element={<PrivateRoute isAuthenticated={isAuthenticated} preferredMode={preferredMode} setIsAuthenticated={setIsAuthenticated} setOpen={setOpen} open={open} theme={theme}><Reports preferredMode={preferredMode} globalTheme={theme} open={open}/></PrivateRoute>}/>
+          <Route path="/learn" element={<PrivateRoute isAuthenticated={isAuthenticated} preferredMode={preferredMode} setIsAuthenticated={setIsAuthenticated} setOpen={setOpen} open={open} theme={theme}><Learn globalTheme={theme} preferredMode={preferredMode} open={open}/></PrivateRoute>}/>
+          <Route path="/quiz" element={<PrivateRoute isAuthenticated={isAuthenticated} preferredMode={preferredMode} setIsAuthenticated={setIsAuthenticated} setOpen={setOpen} open={open} theme={theme}><Quiz preferredMode={preferredMode} globalTheme={theme} open={open}/></PrivateRoute>}/>
+          <Route path="/summarize" element={<PrivateRoute isAuthenticated={isAuthenticated} preferredMode={preferredMode} setIsAuthenticated={setIsAuthenticated} setOpen={setOpen} open={open} theme={theme}><Summarize preferredMode={preferredMode} globalTheme={theme} open={open}/></PrivateRoute>}/>
           <Route path="*" element={<Navigate to="/dashboard" />} />
         </Routes>
      </ThemeProvider>
